@@ -1,2 +1,2 @@
-# MICO
+# Mico
 Mini DIContainer for Unity
