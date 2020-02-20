@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="$USER_HOME$/Library/Caches/Rider2019.3/extResources" t="IncludeRecursive" />
+    <e p="$USER_HOME$/Library/Caches/Rider2019.3/resharper-host/local/Transient/ReSharperHost/v193/SolutionCaches/_Mico.-118114985.00" t="ExcludeRecursive" />
+    <e p="$PROJECT_DIR$" t="IncludeRecursive">
+      <e p="Assets" t="Include">
+        <e p="Mico" t="Include">
+          <e p="Scripts" t="Include">
+            <e p="Runtime" t="Include">
+              <e p="ConcreteRegisterBase.cs" t="Include" />
+              <e p="Context" t="Include">
+                <e p="GameObjectContext.cs" t="Include" />
+                <e p="MainGameObjectContext.cs" t="Include" />
+                <e p="MonoInstaller.cs" t="Include" />
+              </e>
+              <e p="DiContainer.cs" t="Include" />
+              <e p="FactoryTable.cs" t="Include" />
+              <e p="InjectField.cs" t="Include" />
+              <e p="Lazy.cs" t="Include" />
+              <e p="Mico.asmdef" t="Include" />
+              <e p="MicoAssert.cs" t="Include" />
+              <e p="MicoException.cs" t="Include" />
+              <e p="RegisterInfo.cs" t="Include" />
+              <e p="Util.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="MicoSample" t="Include">
+          <e p="Scripts" t="Include">
+            <e p="Runtime" t="Include">
+              <e p="IMicoSampleLogger.cs" t="Include" />
+              <e p="MicoSampl.asmdef" t="Include" />
+              <e p="MicoSampleInjected.cs" t="Include" />
+              <e p="MicoSampleInstaller.cs" t="Include" />
+              <e p="MicoSampleUnityLogger.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="MicoTest" t="Include">
+          <e p="Tests" t="Include">
+            <e p="ContainerTest.cs" t="Include" />
+            <e p="MicoTests.asmdef" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="Mico.csproj" t="IncludeRecursive" />
+      <e p="Mico.sln" t="IncludeFlat" />
+      <e p="MicoSampl.csproj" t="IncludeRecursive" />
+      <e p="MicoTests.csproj" t="IncludeRecursive" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="Packages" t="ExcludeRecursive" />
+      <e p="Temp/bin" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>
