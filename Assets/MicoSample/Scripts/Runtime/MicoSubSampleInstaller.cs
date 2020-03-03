@@ -6,12 +6,15 @@ using Mico.Context;
 
 namespace MicoSample
 {
-    public class MicoSampleInstaller : MonoInstaller
+    public class MicoSubSampleInstaller : MonoInstaller
     {
         public override void InstallRegisters(DiContainer container)
         {
+#if UNITY_EDITOR
+            container.RegisterNew<IMicoSampleLogger, MicoSampleFileLogger>("./log.txt");
+#else
             container.RegisterNew<IMicoSampleLogger, MicoSampleDebugLogger>();
-            container.RegisterNew<MicoSceneLoader>("SubScene").NonLazy();
+#endif
         }
     }
 }

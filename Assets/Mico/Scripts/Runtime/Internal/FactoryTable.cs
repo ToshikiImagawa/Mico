@@ -2,10 +2,9 @@
 // Copyright (c) 2020-2020 COMCREATE. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
-namespace Mico
+namespace Mico.Internal
 {
     internal class FactoryTable
     {
@@ -46,17 +45,6 @@ namespace Mico
             }
         }
 
-        public bool TryGet(Type type, out Func<object> factory)
-        {
-            return TryGet(type, typeof(DefaultId), out factory);
-        }
-
-        public Func<object> Get(Type type)
-        {
-            if (TryGet(type, out var factory)) return factory;
-            throw new KeyNotFoundException($"Type or ID was not found. : Type = {type.FullName}");
-        }
-
         public bool TryGet(Type type, object id, out Func<object> factory)
         {
             var hash = Util.Reflection.HashCodeCombine(id, type);
@@ -74,12 +62,6 @@ namespace Mico
 
             factory = null;
             return false;
-        }
-
-        public Func<object> Get(Type type, object id)
-        {
-            if (TryGet(type, id, out var factory)) return factory;
-            throw new KeyNotFoundException($"Type or ID was not found. : Type = {type.FullName}, ID = {id}");
         }
 
         public static FactoryTable Create(FactoryTuple[] values)
@@ -101,36 +83,14 @@ namespace Mico
             Factory = factory;
         }
 
-        private FactoryTuple(Type type, Func<object> factory)
-        {
-            Id = typeof(DefaultId);
-            Type = type;
-            Factory = factory;
-        }
-
         public override int GetHashCode()
         {
             return Util.Reflection.HashCodeCombine(Id, Type);
         }
 
-        public static FactoryTuple Create(Type type, Func<object> factory)
-        {
-            return new FactoryTuple(type, factory);
-        }
-
         public static FactoryTuple Create(Type type, object id, Func<object> factory)
         {
             return new FactoryTuple(id, type, factory);
-        }
-
-        public static FactoryTuple Create<TValue>(Func<TValue> factory) where TValue : class
-        {
-            return new FactoryTuple(typeof(TValue), factory);
-        }
-
-        public static FactoryTuple Create<TValue>(object id, Func<TValue> factory) where TValue : class
-        {
-            return new FactoryTuple(id, typeof(TValue), factory);
         }
     }
 

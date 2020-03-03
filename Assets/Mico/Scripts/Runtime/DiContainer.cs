@@ -4,41 +4,57 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Mico.Internal;
 
 namespace Mico
 {
-    public class DiContainer
+    [IgnoreInjection]
+    public partial class DiContainer : IDisposable
     {
-        private readonly DiContainer _parentContainer;
+        private readonly RegisterInfoPool _registerInfoPool;
+        private readonly ListPool<FactoryTuple> _factoryTupleListPool;
+        private readonly ListPool<Func<object>> _factoryListPool;
+        private readonly Dictionary<(Type, object), object> _cache;
+        private DiContainer _parentContainer;
+        private DiContainer[] _ancestorContainers;
 
-        private readonly List<ConcreteRegisterBase> _concreteRegisters = new List<ConcreteRegisterBase>();
+        private readonly Queue<RegisterInfo> _registerInfos = new Queue<RegisterInfo>();
         private FactoryTable _factoryTable;
 
         public bool IsCompiled => _factoryTable != null;
 
-        private FactoryTable FactoryTable
-        {
-            get
-            {
-                if (_factoryTable != null) return _factoryTable;
-                Compile();
-                return _factoryTable;
-            }
-        }
+        private FactoryTable FactoryTable => _factoryTable;
 
-        public DiContainer()
+        public DiContainer() : this(null)
         {
-            _parentContainer = null;
         }
 
         public DiContainer(DiContainer parentContainer)
         {
             _parentContainer = parentContainer;
+            _ancestorContainers = GetAncestorContainers().ToArray();
+            var rootParent = _ancestorContainers.LastOrDefault();
+            if (rootParent != null)
+            {
+                _registerInfoPool = rootParent._registerInfoPool;
+                _factoryTupleListPool = rootParent._factoryTupleListPool;
+                _factoryListPool = rootParent._factoryListPool;
+                _cache = rootParent._cache;
+            }
+            else
+            {
+                _registerInfoPool = new RegisterInfoPool();
+                _factoryTupleListPool = new ListPool<FactoryTuple>();
+                _factoryListPool = new ListPool<Func<object>>();
+                _cache = new Dictionary<(Type, object), object>();
+            }
         }
 
         public void Inject(object obj)
         {
             if (obj == null) return;
+            if (obj.GetType().GetCustomAttribute<IgnoreInjectionAttribute>() != null) return;
             var setters = Util.Reflection.GetAllSetter(obj, GetFactory);
             foreach (var setter in setters)
             {
@@ -48,188 +64,154 @@ namespace Mico
 
         private Func<object> GetFactory(Type fieldType, object id)
         {
-            if (_parentContainer == null)
             {
-                return id == null
-                    ? FactoryTable.Get(fieldType)
-                    : FactoryTable.Get(fieldType, id);
+                if (FactoryTable.TryGet(fieldType, id, out var factory))
+                {
+                    return factory;
+                }
+            }
+            foreach (var ancestorContainer in _ancestorContainers)
+            {
+                if (ancestorContainer.FactoryTable.TryGet(fieldType, id, out var factory))
+                {
+                    return factory;
+                }
             }
 
-            Func<object> factory;
-            if (id == null
-                ? FactoryTable.TryGet(fieldType, out factory)
-                : FactoryTable.TryGet(fieldType, id, out factory))
-            {
-                return factory;
-            }
+            MicoAssert.Throw($"Type or ID was not found. : Type = {fieldType.FullName}, ID = {id}");
+            return null;
+        }
 
-            return _parentContainer.GetFactory(fieldType, id);
+        private RegisterInfo GetRegisterInfo()
+        {
+            var registerInfo = _registerInfoPool.Spawn();
+            registerInfo.Reset();
+            _registerInfos.Enqueue(registerInfo);
+            return registerInfo;
         }
 
         public void Compile()
         {
             if (IsCompiled) MicoAssert.Throw("Already compiled !");
-            var items = _concreteRegisters.ToArray();
-            _concreteRegisters.Clear();
-            var nonLazies = new Queue<FactoryTuple>();
-            var factoryTuples = items.Select(item =>
+            _parentContainer?.Resolve();
+
+            var factoryTupleList = _factoryTupleListPool.Spawn();
+            factoryTupleList.Clear();
+            var nonLazyList = _factoryListPool.Spawn();
+            nonLazyList.Clear();
+            while (_registerInfos.Count > 0)
             {
-                var factoryTuple = CreateFactoryTuple(item);
-                if (!item.Info.IsLazy) nonLazies.Enqueue(factoryTuple);
-                return factoryTuple;
-            }).ToArray();
-            while (nonLazies.Count > 0)
-            {
-                var factoryTuple = nonLazies.Dequeue();
-                factoryTuple.Factory();
-            }
-            _factoryTable = FactoryTable.Create(factoryTuples);
-        }
-
-        public ConcreteWithIdRegister<TInjected> RegisterType<TInjected, TInjectedImpl>()
-            where TInjectedImpl : TInjected, new()
-        {
-            if (IsCompiled)
-            {
-                MicoAssert.Throw(
-                    $"Already compiled, can’t register new type when compile finished. type = {typeof(TInjected).FullName}.");
-            }
-
-            var item = new ConcreteWithIdRegister<TInjected>(() => new TInjectedImpl());
-            _concreteRegisters.Add(item);
-            return item;
-        }
-
-        public ConcreteWithIdRegister<TInjected> RegisterType<TInjected>(Func<TInjected> factory)
-        {
-            if (IsCompiled)
-            {
-                MicoAssert.Throw(
-                    $"Already compiled, can’t register new type when compile finished. type = {typeof(TInjected).FullName}.");
-            }
-
-            var item = new ConcreteWithIdRegister<TInjected>(factory);
-            _concreteRegisters.Add(item);
-            return item;
-        }
-
-        public ConcreteWithIdRegister RegisterType(Type type, Func<object> factory)
-        {
-            if (IsCompiled)
-            {
-                MicoAssert.Throw(
-                    $"Already compiled, can’t register new type when compile finished. type = {type.FullName}.");
-            }
-
-            var item = new ConcreteWithIdRegister(type, factory);
-            _concreteRegisters.Add(item);
-            return item;
-        }
-
-        public T ResolveType<T>() where T : new()
-        {
-            var instance = new T();
-            Inject(instance);
-            return instance;
-        }
-
-        private FactoryTuple CreateFactoryTuple(ConcreteRegisterBase register)
-        {
-            Func<object> factory;
-
-            switch (register.Info.Lifetime)
-            {
-                case LifetimeType.Transient:
+                using (var registerInfo = _registerInfos.Dequeue())
                 {
-                    factory = () =>
+                    Func<object> factory;
+                    var (type, id) = (registerInfo.InstanceType, registerInfo.Id);
+                    var innerFactory = registerInfo.Factory;
+                    switch (registerInfo.Lifetime)
                     {
-                        var item = register.Info.Constructor.Factory();
-                        Inject(item);
-                        return item;
-                    };
-                    break;
-                }
-                case LifetimeType.Singleton:
-                {
-                    var lazy = new Lazy(() =>
-                    {
-                        var item = register.Info.Constructor.Factory();
-                        Inject(item);
-                        return item;
-                    });
-                    factory = () => lazy;
-                    break;
-                }
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                        case LifetimeType.Transient:
+                        {
+                            factory = () =>
+                            {
+                                var instance = innerFactory();
+                                Inject(instance);
+                                return instance;
+                            };
+                            break;
+                        }
+                        case LifetimeType.Singleton:
+                        {
+                            factory = () =>
+                            {
+                                if (_cache.ContainsKey((type, id)))
+                                {
+                                    return _cache[(type, id)];
+                                }
 
-            return register.Info.Id == null
-                ? FactoryTuple.Create(register.Info.InjectedType, factory)
-                : FactoryTuple.Create(register.Info.InjectedType, register.Info.Id, factory);
-        }
-
-        public class Pool
-        {
-            private readonly Dictionary<Type, Queue<object>> _cache = new Dictionary<Type, Queue<object>>();
-            private static readonly Pool Instance;
-
-            static Pool()
-            {
-                Instance = new Pool();
-            }
-
-            public static T Spawn<T>() where T : class, new()
-            {
-                return Instance.__Spawn<T>();
-            }
-
-            public static T Spawn<T>(Func<T> factory) where T : class
-            {
-                return Instance.__Spawn(factory);
-            }
-
-            public static void Despawn<T>(T value) where T : class
-            {
-                Instance.__Despawn(value);
-            }
-
-            public static void ClearAll()
-            {
-                Instance.__ClearAll();
-            }
-
-            private T __Spawn<T>() where T : class, new()
-            {
-                return __Spawn(() => new T());
-            }
-
-            private T __Spawn<T>(Func<T> factory) where T : class
-            {
-                var type = typeof(T);
-                if (!_cache.ContainsKey(type)) _cache[type] = new Queue<object>();
-                if (_cache[type].Count > 0) return _cache[type].Dequeue() as T;
-                return factory();
-            }
-
-            private void __Despawn<T>(T value) where T : class
-            {
-                var type = typeof(T);
-                if (!_cache.ContainsKey(type)) _cache[type] = new Queue<object>();
-                if (!_cache[type].Contains(value)) _cache[type].Enqueue(value);
-            }
-
-            private void __ClearAll()
-            {
-                var items = _cache.Values.ToArray();
-                _cache.Clear();
-                foreach (var queue in items)
-                {
-                    while (queue.Count > 0)
-                    {
-                        if (queue.Dequeue() is IDisposable disposable) disposable.Dispose();
+                                var instance = innerFactory();
+                                Inject(instance);
+                                _cache[(type, id)] = instance;
+                                return instance;
+                            };
+                            break;
+                        }
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
+
+                    if (registerInfo.NonLazy) nonLazyList.Add(factory);
+                    factoryTupleList.AddRange(registerInfo.InjectedTypes.Select(injectedType =>
+                        FactoryTuple.Create(injectedType, registerInfo.Id, factory)));
                 }
+            }
+
+            _factoryTable = FactoryTable.Create(factoryTupleList.ToArray());
+            _factoryTupleListPool.Despawn(factoryTupleList);
+
+            foreach (var func in nonLazyList)
+            {
+                func?.Invoke();
+            }
+
+            _factoryListPool.Despawn(nonLazyList);
+        }
+
+        public T Resolve<T>()
+        {
+            return Resolve<T>(typeof(DefaultId));
+        }
+
+        public T Resolve<T>(object id)
+        {
+            return (T) Resolve(typeof(T), id);
+        }
+
+        public object Resolve(Type type)
+        {
+            return Resolve(type, typeof(DefaultId));
+        }
+
+        public object Resolve(Type type, object id)
+        {
+            Resolve();
+            return GetFactory(type, id)();
+        }
+
+        public void Dispose()
+        {
+            if (_parentContainer == null)
+            {
+                _registerInfoPool.Clear();
+                _factoryTupleListPool.Clear();
+                _factoryListPool.Clear();
+                _cache.Clear();
+            }
+
+            while (_registerInfos.Count > 0)
+            {
+                IDisposable registerInfo = _registerInfos.Dequeue();
+                registerInfo.Dispose();
+            }
+
+            _registerInfos.Clear();
+            _parentContainer = null;
+            _ancestorContainers = new DiContainer[0];
+            _factoryTable = null;
+        }
+
+        private void Resolve()
+        {
+            if (IsCompiled) return;
+            Compile();
+        }
+
+        private IEnumerable<DiContainer> GetAncestorContainers()
+        {
+            if (_parentContainer == null) yield break;
+            var current = _parentContainer;
+            while (current != null)
+            {
+                yield return current;
+                current = current._parentContainer;
             }
         }
     }

@@ -1,9 +1,9 @@
 // Mico C# reference source
-// Copyright (c) 2016-2020 COMCREATE. All rights reserved.
+// Copyright (c) 2020-2020 COMCREATE. All rights reserved.
 
 using UnityEngine;
 
-namespace Mico.Unity
+namespace Mico.Context
 {
     public abstract class MonoInstaller : MonoBehaviour, IInstaller
     {

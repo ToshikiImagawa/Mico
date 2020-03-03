@@ -5,8 +5,8 @@ namespace MicoSample
 {
     public interface IMicoSampleLogger
     {
-        void Debug(string message);
+        void Debug(string message, UnityEngine.Object context);
 
-        void Error(string message);
+        void Error(string message, UnityEngine.Object context);
     }
 }

@@ -1,12 +1,12 @@
 {
-    "name": "MicoTests",
+    "name": "Mico.Editor",
     "references": [
         "Mico"
     ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
     ],
-    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

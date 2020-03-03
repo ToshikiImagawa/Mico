@@ -1,5 +1,5 @@
 // MicoSample C# reference source
-// Copyright (c) 2016-2020 COMCREATE. All rights reserved.
+// Copyright (c) 2020-2020 COMCREATE. All rights reserved.
 
 using Mico;
 using UnityEngine;
@@ -12,8 +12,8 @@ namespace MicoSample
 
         private void Awake()
         {
-            _logger.Debug("MicoSampleInjectable Awake");
-            _logger.Error("MicoSampleInjectable Awake");
+            _logger.Debug("MicoSampleInjectable Awake", this);
+            _logger.Error("MicoSampleInjectable Awake", this);
         }
     }
 }

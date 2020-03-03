@@ -7,22 +7,35 @@
       <e p="Assets" t="Include">
         <e p="Mico" t="Include">
           <e p="Scripts" t="Include">
+            <e p="Editor" t="Include">
+              <e p="GameObjectContextEditor.cs" t="Include" />
+              <e p="Mico.Editor.asmdef" t="Include" />
+              <e p="SceneContextEditor.cs" t="Include" />
+            </e>
             <e p="Runtime" t="Include">
-              <e p="ConcreteRegisterBase.cs" t="Include" />
               <e p="Context" t="Include">
+                <e p="Context.cs" t="Include" />
+                <e p="Extensions.cs" t="Include" />
                 <e p="GameObjectContext.cs" t="Include" />
-                <e p="MainGameObjectContext.cs" t="Include" />
                 <e p="MonoInstaller.cs" t="Include" />
+                <e p="SceneContext.cs" t="Include" />
               </e>
               <e p="DiContainer.cs" t="Include" />
-              <e p="FactoryTable.cs" t="Include" />
-              <e p="InjectField.cs" t="Include" />
-              <e p="Lazy.cs" t="Include" />
+              <e p="DiContainer_Register.cs" t="Include" />
+              <e p="IgnoreInjectionAttribute.cs" t="Include" />
+              <e p="InjectFieldAttribute.cs" t="Include" />
+              <e p="Internal" t="Include">
+                <e p="FactoryTable.cs" t="Include" />
+                <e p="IPool.cs" t="Include" />
+                <e p="ListPool.cs" t="Include" />
+                <e p="MicoAssert.cs" t="Include" />
+                <e p="RegisterInfo.cs" t="Include" />
+                <e p="RegisterInfoPool.cs" t="Include" />
+                <e p="Util.cs" t="Include" />
+              </e>
+              <e p="IRegister.cs" t="Include" />
               <e p="Mico.asmdef" t="Include" />
-              <e p="MicoAssert.cs" t="Include" />
               <e p="MicoException.cs" t="Include" />
-              <e p="RegisterInfo.cs" t="Include" />
-              <e p="Util.cs" t="Include" />
             </e>
           </e>
         </e>
@@ -31,20 +44,28 @@
             <e p="Runtime" t="Include">
               <e p="IMicoSampleLogger.cs" t="Include" />
               <e p="MicoSampl.asmdef" t="Include" />
+              <e p="MicoSampleDebugLogger.cs" t="Include" />
+              <e p="MicoSampleFileLogger.cs" t="Include" />
               <e p="MicoSampleInjected.cs" t="Include" />
               <e p="MicoSampleInstaller.cs" t="Include" />
-              <e p="MicoSampleUnityLogger.cs" t="Include" />
+              <e p="MicoSceneLoader.cs" t="Include" />
+              <e p="MicoSubSampleInstaller.cs" t="Include" />
             </e>
           </e>
         </e>
         <e p="MicoTest" t="Include">
           <e p="Tests" t="Include">
-            <e p="ContainerTest.cs" t="Include" />
-            <e p="MicoTests.asmdef" t="Include" />
+            <e p="Editor" t="Include">
+              <e p="DiContainerErrorTests.cs" t="Include" />
+              <e p="DiContainerTests.cs" t="Include" />
+              <e p="MicoTests.asmdef" t="Include" />
+              <e p="Mock.cs" t="Include" />
+            </e>
           </e>
         </e>
       </e>
       <e p="Mico.csproj" t="IncludeRecursive" />
+      <e p="Mico.Editor.csproj" t="IncludeRecursive" />
       <e p="Mico.sln" t="IncludeFlat" />
       <e p="MicoSampl.csproj" t="IncludeRecursive" />
       <e p="MicoTests.csproj" t="IncludeRecursive" />
