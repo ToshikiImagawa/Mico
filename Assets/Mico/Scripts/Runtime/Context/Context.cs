@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Mico.Context
@@ -15,6 +16,9 @@ namespace Mico.Context
             {
                 if (installer != null) installer.InstallRegisters(Container);
             }
+            Container.Compile();
         }
+
+        protected abstract void OnDestroy();
     }
 }

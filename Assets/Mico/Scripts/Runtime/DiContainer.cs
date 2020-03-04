@@ -24,8 +24,6 @@ namespace Mico
 
         public bool IsCompiled => _factoryTable != null;
 
-        private FactoryTable FactoryTable => _factoryTable;
-
         public DiContainer() : this(null)
         {
         }
@@ -65,14 +63,14 @@ namespace Mico
         private Func<object> GetFactory(Type fieldType, object id)
         {
             {
-                if (FactoryTable.TryGet(fieldType, id, out var factory))
+                if (_factoryTable.TryGet(fieldType, id, out var factory))
                 {
                     return factory;
                 }
             }
             foreach (var ancestorContainer in _ancestorContainers)
             {
-                if (ancestorContainer.FactoryTable.TryGet(fieldType, id, out var factory))
+                if (ancestorContainer._factoryTable.TryGet(fieldType, id, out var factory))
                 {
                     return factory;
                 }

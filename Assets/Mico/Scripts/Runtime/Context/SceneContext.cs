@@ -14,10 +14,11 @@ namespace Mico.Context
     public sealed class SceneContext : Context
     {
         [SerializeField, HideInInspector] private string parentScenePath = string.Empty;
-        [HideInInspector] public SceneContext parentSceneContext;
+        private SceneContext _parentSceneContext;
         private Scene? _parentScene;
 #if UNITY_EDITOR
         [SerializeField] private UnityEditor.SceneAsset parentSceneAsset;
+        public SceneContext ParentSceneContext => _parentSceneContext;
 #endif
 
         private Scene _scene;
@@ -42,8 +43,8 @@ namespace Mico.Context
                 if (_container != null) return _container;
                 if (Instances.ContainsKey(ParentScene.handle))
                 {
-                    parentSceneContext = Instances[ParentScene.handle];
-                    _container = new DiContainer(parentSceneContext.Container);
+                    _parentSceneContext = Instances[ParentScene.handle];
+                    _container = new DiContainer(_parentSceneContext.Container);
                     return _container;
                 }
 
@@ -74,9 +75,14 @@ namespace Mico.Context
             MicoAssert.Throw("Assert!");
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
-            if (_main == this) _main = null;
+            _container?.Dispose();
+            if (!Instances.ContainsKey(_scene.handle)) return;
+            if (Instances[_scene.handle] == this)
+            {
+                Instances.Remove(_scene.handle);
+            }
         }
 
         private void Inject()

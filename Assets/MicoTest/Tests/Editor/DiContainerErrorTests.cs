@@ -9,16 +9,12 @@ namespace MicoTest
     public class DiContainerErrorTests
     {
         private DiContainer _container;
-        private DiContainer _childContainer;
-        private DiContainer _grandChildContainer;
 
         [SetUp]
         public void Setup()
         {
             // setup
             _container = new DiContainer();
-            _childContainer = new DiContainer(_container);
-            _grandChildContainer = new DiContainer(_childContainer);
         }
 
         #region RegisterNew

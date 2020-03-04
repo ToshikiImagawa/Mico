@@ -10,7 +10,7 @@ namespace Mico.Context
     {
         [SerializeField] private Context parentContext;
         private DiContainer _container;
-
+        public Context ParentContext => parentContext;
         public override DiContainer Container => _container ?? (_container = new DiContainer(parentContext.Container));
 
         internal void SetParentContext(Context defaultParentContext)
@@ -18,6 +18,11 @@ namespace Mico.Context
             if (parentContext != null) return;
             var parentGameObjectContext = this.GetComponentInParentOnly<Context>();
             parentContext = parentGameObjectContext != null ? parentGameObjectContext : defaultParentContext;
+        }
+
+        protected override void OnDestroy()
+        {
+            _container?.Dispose();
         }
     }
 }

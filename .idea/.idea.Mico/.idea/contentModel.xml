@@ -58,8 +58,12 @@
             <e p="Editor" t="Include">
               <e p="DiContainerErrorTests.cs" t="Include" />
               <e p="DiContainerTests.cs" t="Include" />
-              <e p="MicoTests.asmdef" t="Include" />
+              <e p="MicoTests.Editor.asmdef" t="Include" />
               <e p="Mock.cs" t="Include" />
+            </e>
+            <e p="Runtime" t="Include">
+              <e p="ContextTests.cs" t="Include" />
+              <e p="MicoTests.asmdef" t="Include" />
             </e>
           </e>
         </e>
@@ -69,6 +73,7 @@
       <e p="Mico.sln" t="IncludeFlat" />
       <e p="MicoSampl.csproj" t="IncludeRecursive" />
       <e p="MicoTests.csproj" t="IncludeRecursive" />
+      <e p="MicoTests.Editor.csproj" t="IncludeRecursive" />
       <e p="obj" t="ExcludeRecursive" />
       <e p="Packages" t="ExcludeRecursive" />
       <e p="Temp/bin" t="ExcludeRecursive" />

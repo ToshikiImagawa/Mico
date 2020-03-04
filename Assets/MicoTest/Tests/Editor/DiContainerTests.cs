@@ -3,7 +3,6 @@
 
 using Mico;
 using NUnit.Framework;
-using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
 
 namespace MicoTest

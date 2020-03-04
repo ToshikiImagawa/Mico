@@ -25,7 +25,7 @@ namespace Mico.Editor
                 EditorGUILayout.BeginHorizontal();
                 {
                     EditorGUILayout.LabelField("Parent Scene Context");
-                    EditorGUILayout.ObjectField(sceneContext != null ? sceneContext.parentSceneContext : null,
+                    EditorGUILayout.ObjectField(sceneContext != null ? sceneContext.ParentSceneContext : null,
                         typeof(SceneContext), true);
                 }
                 EditorGUILayout.EndHorizontal();
