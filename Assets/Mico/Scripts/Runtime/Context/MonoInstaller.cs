@@ -9,9 +9,4 @@ namespace Mico.Context
     {
         public abstract void InstallRegisters(DiContainer container);
     }
-
-    public interface IInstaller
-    {
-        void InstallRegisters(DiContainer container);
-    }
 }

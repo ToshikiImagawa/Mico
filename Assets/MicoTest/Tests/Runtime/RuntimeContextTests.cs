@@ -1,16 +1,20 @@
 // MicoTest C# reference source
 // Copyright (c) 2020-2020 COMCREATE. All rights reserved.
 
+using System;
 using System.Collections;
+using System.Threading.Tasks;
+using Mico;
 using Mico.Context;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
+using Object = UnityEngine.Object;
 
 namespace MicoTest
 {
-    public class ContextTests
+    public class RuntimeContextTests
     {
         private GameObjectContext _gameObjectContext;
         private GameObjectContext _childContext;
@@ -60,10 +64,22 @@ namespace MicoTest
         }
 
         [UnityTest]
-        public IEnumerator test_()
+        public IEnumerator test_SceneContextを同シーンに複数生成するとエラーになること()
         {
+            // setup
+            Exception exception = null;
             // exercise
             yield return WaitCompiled();
+            try
+            {
+                var context = new GameObject("SceneContext").AddComponent<SceneContext>();
+            }
+            catch (Exception e)
+            {
+                exception = e;
+            }
+
+            Assert.IsNotNull(exception);
         }
     }
 }
