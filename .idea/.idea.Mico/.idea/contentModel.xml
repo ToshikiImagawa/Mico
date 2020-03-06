@@ -13,10 +13,26 @@
               <e p="SceneContextEditor.cs" t="Include" />
             </e>
             <e p="Runtime" t="Include">
+              <e p="AssemblyInfo.cs" t="Include" />
               <e p="Context" t="Include">
                 <e p="Context.cs" t="Include" />
                 <e p="Extensions.cs" t="Include" />
                 <e p="GameObjectContext.cs" t="Include" />
+                <e p="IInstaller.cs" t="Include" />
+                <e p="Internal" t="Include">
+                  <e p="ContextContainer.cs" t="Include" />
+                  <e p="GameObjectContextRepository.cs" t="Include" />
+                  <e p="GameObjectContextService.cs" t="Include" />
+                  <e p="IContext.cs" t="Include" />
+                  <e p="IGameObjectContextRepository.cs" t="Include" />
+                  <e p="IGameObjectContextService.cs" t="Include" />
+                  <e p="ISceneContextRepository.cs" t="Include" />
+                  <e p="ISceneContextService.cs" t="Include" />
+                  <e p="ISceneRepository.cs" t="Include" />
+                  <e p="SceneContextRepository.cs" t="Include" />
+                  <e p="SceneContextService.cs" t="Include" />
+                  <e p="SceneRepository.cs" t="Include" />
+                </e>
                 <e p="MonoInstaller.cs" t="Include" />
                 <e p="SceneContext.cs" t="Include" />
               </e>
@@ -62,8 +78,8 @@
               <e p="Mock.cs" t="Include" />
             </e>
             <e p="Runtime" t="Include">
-              <e p="ContextTests.cs" t="Include" />
               <e p="MicoTests.asmdef" t="Include" />
+              <e p="RuntimeContextTests.cs" t="Include" />
             </e>
           </e>
         </e>

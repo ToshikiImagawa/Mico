@@ -3,9 +3,8 @@
 
 using System;
 using System.Collections;
-using System.Threading.Tasks;
-using Mico;
 using Mico.Context;
+using Mico.Context.Internal;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;

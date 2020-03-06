@@ -1,28 +1,26 @@
 // Mico C# reference source
 // Copyright (c) 2020-2020 COMCREATE. All rights reserved.
 
+using System;
+using Mico.Context.Internal;
 using UnityEngine;
 
 namespace Mico.Context
 {
-    [IgnoreInjection]
     public sealed class GameObjectContext : Context
     {
         [SerializeField] private Context parentContext;
-        private DiContainer _container;
-        public Context ParentContext => parentContext;
-        public override DiContainer Container => _container ?? (_container = new DiContainer(parentContext.Container));
 
-        internal void SetParentContext(Context defaultParentContext)
-        {
-            if (parentContext != null) return;
-            var parentGameObjectContext = this.GetComponentInParentOnly<Context>();
-            parentContext = parentGameObjectContext != null ? parentGameObjectContext : defaultParentContext;
-        }
+        private readonly Lazy<IGameObjectContextService> _serviceLazy =
+            new Lazy<IGameObjectContextService>(ContextContainer.Resolve<IGameObjectContextService>);
+
+        internal override IContext ParentContext =>
+            _serviceLazy.Value.GetGameObjectContextOrDefault(this, parentContext);
 
         protected override void OnDestroy()
         {
-            _container?.Dispose();
+            base.OnDestroy();
+            parentContext = null;
         }
     }
 }

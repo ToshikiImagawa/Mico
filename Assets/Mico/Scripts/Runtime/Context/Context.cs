@@ -1,24 +1,29 @@
-using System;
+using System.Collections.Generic;
+using Mico.Context.Internal;
 using UnityEngine;
 
 namespace Mico.Context
 {
-    [IgnoreInjection]
-    [DisallowMultipleComponent]
-    public abstract class Context : MonoBehaviour
+    [IgnoreInjection, DisallowMultipleComponent]
+    public abstract class Context : MonoBehaviour, IContext
     {
         [SerializeField] private MonoInstaller[] installers = new MonoInstaller[0];
-        public abstract DiContainer Container { get; }
+        private DiContainer _container;
 
-        internal void Compile()
+        public DiContainer Container => _container;
+        internal abstract IContext ParentContext { get; }
+        IContext IContext.ParentContext => ParentContext;
+        IEnumerable<IInstaller> IContext.Installers => installers;
+
+        void IContext.SetContainer(DiContainer container)
         {
-            foreach (var installer in installers)
-            {
-                if (installer != null) installer.InstallRegisters(Container);
-            }
-            Container.Compile();
+            _container = container;
         }
 
-        protected abstract void OnDestroy();
+        protected virtual void OnDestroy()
+        {
+            _container?.Dispose();
+            installers = null;
+        }
     }
 }
