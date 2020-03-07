@@ -12,6 +12,11 @@ namespace Mico.Context.Internal
             return _container.Resolve<T>();
         }
 
+        public static void Inject(object obj)
+        {
+            _container.Inject(obj);
+        }
+
         static ContextContainer()
         {
             _container = new DiContainer();

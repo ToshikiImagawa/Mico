@@ -19,9 +19,7 @@ namespace Mico.Context.Internal
         public bool Boot(Scene scene, IContext sceneContext, string scenePath = null)
         {
             if (!_sceneContextRepository.SetSceneContext(scene.handle, sceneContext)) return false;
-            var contextSceneAll = scene.GetComponentsInScene<IContext>().ToList();
-            contextSceneAll.Remove(sceneContext);
-            var contextScenes = contextSceneAll.ToArray();
+            var contextSceneAll = _helper.GetContextsInScene(scene).Where(_ => _ != sceneContext).ToArray();
             if (string.IsNullOrEmpty(scenePath))
             {
                 sceneContext.SetContainer(new DiContainer());
@@ -34,18 +32,17 @@ namespace Mico.Context.Internal
                     : new DiContainer());
             }
 
-            foreach (var context in contextScenes)
+            foreach (var context in contextSceneAll)
             {
                 SetContainer(context, context.ParentContext ?? sceneContext);
             }
 
-            Compile(sceneContext);
-            foreach (var context in contextScenes)
+            foreach (var context in new[] {sceneContext}.Concat(contextSceneAll))
             {
                 Compile(context);
             }
 
-            Inject(sceneContext, scene.GetComponentsInScene<Component>());
+            Inject(sceneContext, _helper.GetComponentsInScene(scene));
             return true;
         }
 
@@ -74,14 +71,7 @@ namespace Mico.Context.Internal
 
         private void SetContainer(IContext context, IContext parentContext)
         {
-            if (context.Container != null) return;
-            if (parentContext != null)
-            {
-                context.SetContainer(new DiContainer(parentContext.Container));
-                return;
-            }
-
-            context.SetContainer(new DiContainer());
+            context.SetContainer(parentContext != null ? new DiContainer(parentContext.Container) : new DiContainer());
         }
 
         private void Compile(IContext context)
@@ -99,26 +89,22 @@ namespace Mico.Context.Internal
             foreach (var component in componentsInScene)
             {
                 if (component.GetType().GetCustomAttribute<IgnoreInjectionAttribute>() != null) continue;
-                var parentContext = component.GetComponentInParent<IContext>();
-                if (parentContext != null)
+                var parentContext = _helper.GetParentContext(component) ?? context;
+                try
                 {
-                    try
+                    _helper.Inject(parentContext.Container, component);
+                }
+                catch (Exception e)
+                {
+                    if (parentContext is Component instance)
                     {
-                        parentContext.Container.Inject(component);
+                        Debug.LogException(e, instance);
                     }
-                    catch (Exception e)
+                    else
                     {
-                        if (parentContext is Component instance)
-                        {
-                            Debug.LogException(e, instance);
-                        }
-                        else
-                        {
-                            Debug.LogException(e);
-                        }
+                        Debug.LogException(e);
                     }
                 }
-                else context.Container.Inject(component);
             }
         }
     }
