@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
 using Object = UnityEngine.Object;
 
-namespace MicoTest
+namespace MicoContextTest
 {
     public class RuntimeContextTests
     {
