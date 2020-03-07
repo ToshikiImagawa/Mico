@@ -1,40 +1,65 @@
 // MicoTest C# reference source
 // Copyright (c) 2020-2020 COMCREATE. All rights reserved.
 
+using System.Linq;
 using Mico;
 using Mico.Context.Internal;
+using Mico.Internal;
+#if MICO_TEST_ADD_MOQ
+using Mico.Context;
+using Moq;
+#endif
 using NUnit.Framework;
+using UnityEngine;
+using Assert = UnityEngine.Assertions.Assert;
 
-namespace MicoTest
+namespace MicoContextTest
 {
     public class ContextTests
     {
 #if MICO_TEST_ADD_MOQ
-        private readonly Moq.Mock<ISceneRepository> _sceneRepositoryMock =
-            new Moq.Mock<ISceneRepository>();
+        private readonly Mock<ISceneRepository> _sceneRepositoryMoq =
+            new Mock<ISceneRepository>();
 
-        private readonly Moq.Mock<ISceneContextRepository> _sceneContextRepositoryMock =
-            new Moq.Mock<ISceneContextRepository>();
+        private readonly Mock<ISceneContextRepository> _sceneContextRepositoryMoq =
+            new Mock<ISceneContextRepository>();
 
-        private readonly Moq.Mock<ISceneContextService> _sceneContextServiceMock =
-            new Moq.Mock<ISceneContextService>();
+        private readonly Mock<ISceneContextHelper> _sceneContextHelper =
+            new Mock<ISceneContextHelper>();
 
-        private readonly Moq.Mock<IGameObjectContextRepository> _gameObjectContextRepositoryMock =
-            new Moq.Mock<IGameObjectContextRepository>();
+        private readonly Mock<ISceneContextService> _sceneContextServiceMoq =
+            new Mock<ISceneContextService>();
 
-        private readonly Moq.Mock<IGameObjectContextService> _gameObjectContextServiceMock =
-            new Moq.Mock<IGameObjectContextService>();
+        private readonly Mock<IGameObjectContextRepository> _gameObjectContextRepositoryMoq =
+            new Mock<IGameObjectContextRepository>();
+
+        private readonly Mock<IGameObjectContextService> _gameObjectContextServiceMoq =
+            new Mock<IGameObjectContextService>();
+
+        private readonly Mock<IContext> _contextMoq =
+            new Mock<IContext>();
+
+        private readonly Mock<IContext> _parentContextMoq =
+            new Mock<IContext>();
+
+        private readonly Mock<IInstaller>[] _installersMoq =
+            {new Mock<IInstaller>(), new Mock<IInstaller>(), new Mock<IInstaller>()};
 #endif
         [SetUp]
         public void Setup()
         {
             var mockContainer = new DiContainer();
 #if MICO_TEST_ADD_MOQ
-            mockContainer.RegisterInstance<ISceneRepository>(_sceneRepositoryMock.Object).AsSingle();
-            mockContainer.RegisterInstance<ISceneContextRepository>(_sceneContextRepositoryMock.Object).AsSingle();
-            mockContainer.RegisterInstance<ISceneContextService>(_sceneContextServiceMock.Object);
-            mockContainer.RegisterInstance<IGameObjectContextRepository>(_gameObjectContextRepositoryMock.Object);
-            mockContainer.RegisterInstance<IGameObjectContextService>(_gameObjectContextServiceMock.Object);
+            _contextMoq.SetupGet(_ => _.Container)
+                .Returns(new DiContainer());
+            _parentContextMoq.SetupGet(_ => _.Container)
+                .Returns(new DiContainer());
+            mockContainer.RegisterInstance<ISceneRepository>(_sceneRepositoryMoq.Object).AsSingle();
+            mockContainer.RegisterInstance<ISceneContextRepository>(_sceneContextRepositoryMoq.Object).AsSingle();
+            mockContainer.RegisterInstance<ISceneContextHelper>(_sceneContextHelper.Object);
+            mockContainer.RegisterInstance<ISceneContextService>(_sceneContextServiceMoq.Object);
+            mockContainer.RegisterInstance<IGameObjectContextRepository>(_gameObjectContextRepositoryMoq.Object);
+            mockContainer.RegisterInstance<IGameObjectContextService>(_gameObjectContextServiceMoq.Object);
 #endif
             mockContainer.Compile();
             ContextContainer.Swap(mockContainer);
@@ -236,50 +261,45 @@ namespace MicoTest
         }
 
         [Test]
-        public void test_SceneContextServiceのBoot時にGetComponentsInSceneが複数返す時各InstallerのInstallRegistersが呼ばれること()
+        public void test_SceneContextServiceのBoot時にGetComponentsInSceneが複数返す時各Componentに対してInjectが呼ばれること()
         {
             // setup
-            var isInjectSceneContainer = false;
             var sceneContextMoq = new Mock<IContext>();
-            var sceneContainerMoq = new Mock<DiContainer>();
-            // sceneContainerMoq
-            //     .As<IDiContainer>()
-            //     .Setup(_ => _.Inject(It.IsAny<Component>()))
-            //     .Callback(() =>
-            //     {
-            //         isInjectSceneContainer = true; 
-            //         Debug.Log("sceneContainerMoq Inject");
-            //     });
+            var sceneContainer = new DiContainer();
             sceneContextMoq
                 .SetupGet(_ => _.Container)
-                .Returns(sceneContainerMoq.Object)
+                .Returns(sceneContainer)
                 .Callback(() => { Debug.Log("return sceneContainerMoq"); });
-            // _sceneContextRepositoryMoq
-            //     .Setup(_ => _.GetParentContext(It.IsAny<Component>()))
-            //     .Returns(() => null);
+            _sceneContextHelper
+                .Setup(_ => _.GetParentContext(It.IsAny<Component>()))
+                .Returns(() => null);
             var components = new[]
             {
                 (Component) new GameObject().AddComponent<IgnoreComponent>(),
                 new GameObject().AddComponent<MockComponent>(),
                 new GameObject().AddComponent<MockComponent>(),
             };
-
             _sceneContextRepositoryMoq
                 .Setup(_ => _.SetSceneContext(0, sceneContextMoq.Object))
                 .Returns(true);
-            // _sceneRepositoryMoq
-            //     .Setup(_ => _.GetContextsInScene(default))
-            //     .Returns(new[] {sceneContextMoq.Object});
-            // _sceneRepositoryMoq
-            //     .Setup(_ => _.GetComponentsInScene(default))
-            //     .Returns(components);
+            _sceneContextHelper
+                .Setup(_ => _.GetContextsInScene(default))
+                .Returns(new[] {sceneContextMoq.Object});
+            _sceneContextHelper
+                .Setup(_ => _.GetComponentsInScene(default))
+                .Returns(components);
 
             var sceneContextService = new SceneContextService();
             ContextContainer.Inject(sceneContextService);
             // exercise
             sceneContextService.Boot(default, sceneContextMoq.Object);
             // verify
-            Assert.IsTrue(isInjectSceneContainer);
+            _sceneContextHelper
+                .Verify(_ => _.Inject(sceneContainer, It.IsAny<MockComponent>()),
+                    Times.AtLeastOnce);
+            _sceneContextHelper
+                .Verify(_ => _.Inject(It.IsAny<DiContainer>(), It.IsAny<IgnoreComponent>()),
+                    Times.Never);
         }
 #endif
     }
