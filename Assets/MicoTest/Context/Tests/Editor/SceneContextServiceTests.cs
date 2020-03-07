@@ -15,7 +15,7 @@ using Assert = UnityEngine.Assertions.Assert;
 
 namespace MicoContextTest
 {
-    public class ContextTests
+    public class SceneContextServiceTests
     {
 #if MICO_TEST_ADD_MOQ
         private readonly Mock<ISceneRepository> _sceneRepositoryMoq =
