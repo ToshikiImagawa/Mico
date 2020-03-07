@@ -204,7 +204,7 @@ namespace MicoTest
         {
             // setup
             var mock = new Mock();
-            _container.RegisterInstance<IMockId, Mock>(mock);
+            _container.RegisterInstance<IMockId>(mock);
             // exercise
             var mockId = _container.Resolve<IMockId>();
             // verify
