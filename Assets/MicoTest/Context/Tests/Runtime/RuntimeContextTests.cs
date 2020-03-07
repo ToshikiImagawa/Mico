@@ -1,7 +1,6 @@
 // MicoTest C# reference source
 // Copyright (c) 2020-2020 COMCREATE. All rights reserved.
 
-using System;
 using System.Collections;
 using Mico.Context;
 using Mico.Context.Internal;
@@ -37,16 +36,16 @@ namespace MicoTest
             Object.DestroyImmediate(_gameObjectContext.gameObject);
         }
 
-        private IEnumerator WaitCompiled()
+        private IEnumerator WaitCompiled(IContext context)
         {
-            while (!_sceneContext.Container.IsCompiled) yield return null;
+            while (!context.Container.IsCompiled) yield return null;
         }
 
         [UnityTest]
         public IEnumerator test_Awake時にGameObjectContextとSceneContextはCompileされること()
         {
             // exercise
-            yield return WaitCompiled();
+            yield return WaitCompiled(_sceneContext);
             // verify
             Assert.IsTrue(_sceneContext.Container.IsCompiled);
             Assert.IsTrue(_gameObjectContext.Container.IsCompiled);
@@ -57,28 +56,9 @@ namespace MicoTest
         public IEnumerator test_GameObjectContextは指定がないとき親のGameObjectContextがParentContextになること()
         {
             // exercise
-            yield return WaitCompiled();
+            yield return WaitCompiled(_sceneContext);
             // verify
             Assert.AreEqual(_childContext.ParentContext, _gameObjectContext);
-        }
-
-        [UnityTest]
-        public IEnumerator test_SceneContextを同シーンに複数生成するとエラーになること()
-        {
-            // setup
-            Exception exception = null;
-            // exercise
-            yield return WaitCompiled();
-            try
-            {
-                var context = new GameObject("SceneContext").AddComponent<SceneContext>();
-            }
-            catch (Exception e)
-            {
-                exception = e;
-            }
-
-            Assert.IsNotNull(exception);
         }
     }
 }

@@ -3,10 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using Mico.Internal;
 
-namespace Mico.Internal
+namespace Mico
 {
-    internal static class MicoAssert
+    public static class MicoAssert
     {
         public static void Throw(string message)
         {

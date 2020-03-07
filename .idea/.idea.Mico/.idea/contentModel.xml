@@ -6,15 +6,15 @@
     <e p="$PROJECT_DIR$" t="IncludeRecursive">
       <e p="Assets" t="Include">
         <e p="Mico" t="Include">
-          <e p="Scripts" t="Include">
-            <e p="Editor" t="Include">
-              <e p="GameObjectContextEditor.cs" t="Include" />
-              <e p="Mico.Editor.asmdef" t="Include" />
-              <e p="SceneContextEditor.cs" t="Include" />
-            </e>
-            <e p="Runtime" t="Include">
-              <e p="AssemblyInfo.cs" t="Include" />
-              <e p="Context" t="Include">
+          <e p="Context" t="Include">
+            <e p="Scripts" t="Include">
+              <e p="Editor" t="Include">
+                <e p="GameObjectContextEditor.cs" t="Include" />
+                <e p="Mico.Context-Editor.asmdef" t="Include" />
+                <e p="SceneContextEditor.cs" t="Include" />
+              </e>
+              <e p="Runtime" t="Include">
+                <e p="AssemblyInfo.cs" t="Include" />
                 <e p="Context.cs" t="Include" />
                 <e p="Extensions.cs" t="Include" />
                 <e p="GameObjectContext.cs" t="Include" />
@@ -33,9 +33,15 @@
                   <e p="SceneContextService.cs" t="Include" />
                   <e p="SceneRepository.cs" t="Include" />
                 </e>
+                <e p="Mico.Context.asmdef" t="Include" />
                 <e p="MonoInstaller.cs" t="Include" />
                 <e p="SceneContext.cs" t="Include" />
               </e>
+            </e>
+          </e>
+          <e p="Scripts" t="Include">
+            <e p="Runtime" t="Include">
+              <e p="AssemblyInfo.cs" t="Include" />
               <e p="DiContainer.cs" t="Include" />
               <e p="DiContainer_Register.cs" t="Include" />
               <e p="IgnoreInjectionAttribute.cs" t="Include" />
@@ -44,13 +50,13 @@
                 <e p="FactoryTable.cs" t="Include" />
                 <e p="IPool.cs" t="Include" />
                 <e p="ListPool.cs" t="Include" />
-                <e p="MicoAssert.cs" t="Include" />
                 <e p="RegisterInfo.cs" t="Include" />
                 <e p="RegisterInfoPool.cs" t="Include" />
                 <e p="Util.cs" t="Include" />
               </e>
               <e p="IRegister.cs" t="Include" />
               <e p="Mico.asmdef" t="Include" />
+              <e p="MicoAssert.cs" t="Include" />
               <e p="MicoException.cs" t="Include" />
             </e>
           </e>
@@ -70,26 +76,36 @@
           </e>
         </e>
         <e p="MicoTest" t="Include">
+          <e p="Context" t="Include">
+            <e p="Tests" t="Include">
+              <e p="Editor" t="Include">
+                <e p="ContextTests.cs" t="Include" />
+                <e p="Mico.Context.Tests-Editor.asmdef" t="Include" />
+              </e>
+              <e p="Runtime" t="Include">
+                <e p="Mico.Context.Tests.asmdef" t="Include" />
+                <e p="RuntimeContextTests.cs" t="Include" />
+              </e>
+            </e>
+          </e>
           <e p="Tests" t="Include">
             <e p="Editor" t="Include">
               <e p="DiContainerErrorTests.cs" t="Include" />
               <e p="DiContainerTests.cs" t="Include" />
-              <e p="MicoTests.Editor.asmdef" t="Include" />
+              <e p="MicoTests-Editor.asmdef" t="Include" />
               <e p="Mock.cs" t="Include" />
-            </e>
-            <e p="Runtime" t="Include">
-              <e p="MicoTests.asmdef" t="Include" />
-              <e p="RuntimeContextTests.cs" t="Include" />
             </e>
           </e>
         </e>
       </e>
+      <e p="Mico.Context-Editor.csproj" t="IncludeRecursive" />
+      <e p="Mico.Context.csproj" t="IncludeRecursive" />
+      <e p="Mico.Context.Tests-Editor.csproj" t="IncludeRecursive" />
+      <e p="Mico.Context.Tests.csproj" t="IncludeRecursive" />
       <e p="Mico.csproj" t="IncludeRecursive" />
-      <e p="Mico.Editor.csproj" t="IncludeRecursive" />
       <e p="Mico.sln" t="IncludeFlat" />
       <e p="MicoSampl.csproj" t="IncludeRecursive" />
-      <e p="MicoTests.csproj" t="IncludeRecursive" />
-      <e p="MicoTests.Editor.csproj" t="IncludeRecursive" />
+      <e p="MicoTests-Editor.csproj" t="IncludeRecursive" />
       <e p="obj" t="ExcludeRecursive" />
       <e p="Packages" t="ExcludeRecursive" />
       <e p="Temp/bin" t="ExcludeRecursive" />

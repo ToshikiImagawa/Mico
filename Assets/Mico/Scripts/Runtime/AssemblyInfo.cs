@@ -5,5 +5,5 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("MicoTests")]
-[assembly: InternalsVisibleTo("MicoTests.Editor")]
+[assembly: InternalsVisibleTo("MicoTests-Editor")]
 #endif

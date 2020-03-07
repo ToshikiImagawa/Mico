@@ -1,7 +1,9 @@
 {
-    "name": "MicoTests.Editor",
+    "name": "Mico.Context.Tests-Editor",
     "references": [
-        "Mico"
+        "Mico",
+        "Mico.Context",
+        "MicoTests.Editor"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
