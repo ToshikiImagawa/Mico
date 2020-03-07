@@ -14,6 +14,7 @@ namespace Mico.Context.Internal
     {
         [InjectField] private ISceneContextRepository _sceneContextRepository = default;
         [InjectField] private ISceneRepository _sceneRepository = default;
+        [InjectField] private ISceneContextHelper _helper = default;
 
         public bool Boot(Scene scene, IContext sceneContext, string scenePath = null)
         {

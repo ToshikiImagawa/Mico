@@ -26,9 +26,11 @@
                   <e p="IContext.cs" t="Include" />
                   <e p="IGameObjectContextRepository.cs" t="Include" />
                   <e p="IGameObjectContextService.cs" t="Include" />
+                  <e p="ISceneContextHelper.cs" t="Include" />
                   <e p="ISceneContextRepository.cs" t="Include" />
                   <e p="ISceneContextService.cs" t="Include" />
                   <e p="ISceneRepository.cs" t="Include" />
+                  <e p="SceneContextHelper.cs" t="Include" />
                   <e p="SceneContextRepository.cs" t="Include" />
                   <e p="SceneContextService.cs" t="Include" />
                   <e p="SceneRepository.cs" t="Include" />
