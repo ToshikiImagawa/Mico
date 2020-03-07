@@ -22,7 +22,7 @@ namespace Mico.Internal
 
             var tupleGroup = values.GroupBy(value => value.GetHashCode()).ToArray();
             _indexFor = Math.Max(tupleGroup.Length - 1, 1);
-            var maxIndex = tupleGroup.Max(tuple => tuple.Key % _indexFor);
+            var maxIndex = tupleGroup.Max(tuple => GetIndex(tuple.Key));
             _factoryTable = new FactoryTuple[maxIndex + 1][];
             foreach (var factoryTuple in values)
             {
