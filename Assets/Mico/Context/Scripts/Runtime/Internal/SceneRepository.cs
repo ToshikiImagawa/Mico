@@ -11,7 +11,7 @@ namespace Mico.Context.Internal
     {
         private readonly Dictionary<string, Scene> _sceneCache = new Dictionary<string, Scene>();
 
-        public Scene GetCacheScene(string scenePath)
+        public Scene? GetCacheScene(string scenePath)
         {
             if (_sceneCache.ContainsKey(scenePath)) return _sceneCache[scenePath];
 
@@ -19,7 +19,7 @@ namespace Mico.Context.Internal
             if (!scene.IsValid())
             {
                 MicoAssert.Throw($"{scenePath} is invalid Scene!");
-                return scene;
+                return null;
             }
 
             _sceneCache[scenePath] = scene;

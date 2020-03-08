@@ -7,6 +7,6 @@ namespace Mico.Context.Internal
 {
     internal interface ISceneRepository
     {
-        Scene GetCacheScene(string scenePath);
+        Scene? GetCacheScene(string scenePath);
     }
 }

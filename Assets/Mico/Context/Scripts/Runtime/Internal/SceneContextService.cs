@@ -26,10 +26,8 @@ namespace Mico.Context.Internal
             }
             else
             {
-                var parentScene = _sceneRepository.GetCacheScene(scenePath);
-                sceneContext.SetContainer(_sceneContextRepository.HasSceneContext(parentScene.handle)
-                    ? new DiContainer(_sceneContextRepository.GetSceneContext(parentScene.handle).Container)
-                    : new DiContainer());
+                var context = GetSceneContextOrDefault(scenePath);
+                sceneContext.SetContainer(context == null ? new DiContainer() : new DiContainer(context.Container));
             }
 
             foreach (var context in contextSceneAll)
@@ -79,9 +77,10 @@ namespace Mico.Context.Internal
         public IContext GetSceneContextOrDefault(string scenePath)
         {
             var parentScene = _sceneRepository.GetCacheScene(scenePath);
-            if (!parentScene.IsValid()) return null;
-            return _sceneContextRepository.HasSceneContext(parentScene.handle)
-                ? _sceneContextRepository.GetSceneContext(parentScene.handle)
+            if (!parentScene.HasValue) return null;
+            var handle = parentScene.Value.handle;
+            return _sceneContextRepository.HasSceneContext(handle)
+                ? _sceneContextRepository.GetSceneContext(handle)
                 : null;
         }
     }

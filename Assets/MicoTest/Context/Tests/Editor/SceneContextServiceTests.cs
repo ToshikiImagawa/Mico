@@ -19,38 +19,35 @@ namespace MicoContextTest
     public class SceneContextServiceTests
     {
 #if MICO_TEST_ADD_MOQ
-        private readonly Mock<ISceneRepository> _sceneRepositoryMoq =
-            new Mock<ISceneRepository>();
+        private Mock<ISceneRepository> _sceneRepositoryMoq;
 
-        private readonly Mock<ISceneContextRepository> _sceneContextRepositoryMoq =
-            new Mock<ISceneContextRepository>();
-
-        private readonly Mock<ISceneContextHelper> _sceneContextHelper =
-            new Mock<ISceneContextHelper>();
-
-        private readonly Mock<ISceneContextService> _sceneContextServiceMoq =
-            new Mock<ISceneContextService>();
-
-        private readonly Mock<IGameObjectContextRepository> _gameObjectContextRepositoryMoq =
-            new Mock<IGameObjectContextRepository>();
-
-        private readonly Mock<IGameObjectContextService> _gameObjectContextServiceMoq =
-            new Mock<IGameObjectContextService>();
-
-        private readonly Mock<IContext> _contextMoq =
-            new Mock<IContext>();
-
-        private readonly Mock<IContext> _parentContextMoq =
-            new Mock<IContext>();
-
-        private readonly Mock<IInstaller>[] _installersMoq =
-            {new Mock<IInstaller>(), new Mock<IInstaller>(), new Mock<IInstaller>()};
+        private Mock<ISceneContextRepository> _sceneContextRepositoryMoq;
+        private Mock<ISceneContextHelper> _sceneContextHelper;
+        private Mock<ISceneContextService> _sceneContextServiceMoq;
+        private Mock<IGameObjectContextRepository> _gameObjectContextRepositoryMoq;
+        private Mock<IGameObjectContextService> _gameObjectContextServiceMoq;
+        private Mock<IContext> _contextMoq;
+        private Mock<IContext> _parentContextMoq;
+        private Mock<IInstaller>[] _installersMoq;
 #endif
         [SetUp]
         public void Setup()
         {
             var mockContainer = new DiContainer();
 #if MICO_TEST_ADD_MOQ
+            _sceneRepositoryMoq = new Mock<ISceneRepository>();
+            _sceneContextRepositoryMoq = new Mock<ISceneContextRepository>();
+            _sceneContextHelper = new Mock<ISceneContextHelper>();
+            _sceneContextServiceMoq = new Mock<ISceneContextService>();
+            _gameObjectContextRepositoryMoq = new Mock<IGameObjectContextRepository>();
+            _gameObjectContextServiceMoq = new Mock<IGameObjectContextService>();
+            _contextMoq = new Mock<IContext>();
+            _parentContextMoq = new Mock<IContext>();
+            _installersMoq = new[]
+            {
+                new Mock<IInstaller>(), new Mock<IInstaller>(), new Mock<IInstaller>()
+            };
+
             _contextMoq.SetupGet(_ => _.Container)
                 .Returns(new DiContainer());
             _parentContextMoq.SetupGet(_ => _.Container)
@@ -72,7 +69,7 @@ namespace MicoContextTest
         {
             // setup
             _sceneContextRepositoryMoq
-                .Setup(_ => _.SetSceneContext(0, _contextMoq.Object))
+                .Setup(_ => _.SetSceneContext(It.IsAny<int>(), It.IsAny<IContext>()))
                 .Returns(false);
             var sceneContextService = new SceneContextService();
             ContextContainer.Inject(sceneContextService);
@@ -87,7 +84,7 @@ namespace MicoContextTest
         {
             // setup
             _sceneContextRepositoryMoq
-                .Setup(_ => _.SetSceneContext(0, _contextMoq.Object))
+                .Setup(_ => _.SetSceneContext(It.IsAny<int>(), It.IsAny<IContext>()))
                 .Returns(true);
             var sceneContextService = new SceneContextService();
             ContextContainer.Inject(sceneContextService);
@@ -102,13 +99,13 @@ namespace MicoContextTest
         {
             // setup
             _sceneContextRepositoryMoq
-                .Setup(_ => _.SetSceneContext(0, _contextMoq.Object))
+                .Setup(_ => _.SetSceneContext(It.IsAny<int>(), It.IsAny<IContext>()))
                 .Returns(true);
             _sceneContextHelper
-                .Setup(_ => _.GetContextsInScene(default))
+                .Setup(_ => _.GetContextsInScene(It.IsAny<Scene>()))
                 .Returns(new[] {_contextMoq.Object});
             _sceneContextHelper
-                .Setup(_ => _.GetComponentsInScene(default))
+                .Setup(_ => _.GetComponentsInScene(It.IsAny<Scene>()))
                 .Returns(new Component[0]);
 
             var sceneContextService = new SceneContextService();
@@ -124,16 +121,16 @@ namespace MicoContextTest
         {
             // setup
             _sceneContextRepositoryMoq
-                .Setup(_ => _.SetSceneContext(0, _contextMoq.Object))
+                .Setup(_ => _.SetSceneContext(It.IsAny<int>(), It.IsAny<IContext>()))
                 .Returns(true);
             _sceneContextHelper
-                .Setup(_ => _.GetContextsInScene(default))
+                .Setup(_ => _.GetContextsInScene(It.IsAny<Scene>()))
                 .Returns(new[] {_contextMoq.Object});
             _sceneContextHelper
-                .Setup(_ => _.GetComponentsInScene(default))
+                .Setup(_ => _.GetComponentsInScene(It.IsAny<Scene>()))
                 .Returns(new Component[0]);
             _sceneContextRepositoryMoq
-                .Setup(_ => _.GetSceneContext(0))
+                .Setup(_ => _.GetSceneContext(It.IsAny<int>()))
                 .Returns(_parentContextMoq.Object);
 
             var sceneContextService = new SceneContextService();
@@ -146,51 +143,23 @@ namespace MicoContextTest
         }
 
         [Test]
-        public void test_SceneContextServiceのBoot時HasSceneContextがtrueの時GetSceneContextが呼ばれること()
-        {
-            // setup
-            _sceneContextRepositoryMoq
-                .Setup(_ => _.SetSceneContext(0, _contextMoq.Object))
-                .Returns(true);
-            _sceneContextHelper
-                .Setup(_ => _.GetContextsInScene(default))
-                .Returns(new[] {_contextMoq.Object});
-            _sceneContextHelper
-                .Setup(_ => _.GetComponentsInScene(default))
-                .Returns(new Component[0]);
-            _sceneContextRepositoryMoq
-                .Setup(_ => _.HasSceneContext(0))
-                .Returns(true);
-            _sceneContextRepositoryMoq
-                .Setup(_ => _.GetSceneContext(0))
-                .Returns(_parentContextMoq.Object);
-
-            var sceneContextService = new SceneContextService();
-            ContextContainer.Inject(sceneContextService);
-            // exercise
-            sceneContextService.Boot(default, _contextMoq.Object, "mockScene");
-            // verify
-            _sceneContextRepositoryMoq.Verify(_ => _.GetSceneContext(It.IsAny<int>()), Times.AtLeastOnce);
-        }
-
-        [Test]
         public void test_SceneContextServiceのBoot時HasSceneContextがfalseの時GetSceneContextが呼ばれないこと()
         {
             // setup
             _sceneContextRepositoryMoq
-                .Setup(_ => _.SetSceneContext(0, _contextMoq.Object))
+                .Setup(_ => _.SetSceneContext(It.IsAny<int>(), It.IsAny<IContext>()))
                 .Returns(true);
             _sceneContextHelper
-                .Setup(_ => _.GetContextsInScene(default))
+                .Setup(_ => _.GetContextsInScene(It.IsAny<Scene>()))
                 .Returns(new[] {_contextMoq.Object});
             _sceneContextHelper
-                .Setup(_ => _.GetComponentsInScene(default))
+                .Setup(_ => _.GetComponentsInScene(It.IsAny<Scene>()))
                 .Returns(new Component[0]);
             _sceneContextRepositoryMoq
-                .Setup(_ => _.HasSceneContext(0))
+                .Setup(_ => _.HasSceneContext(It.IsAny<int>()))
                 .Returns(false);
             _sceneContextRepositoryMoq
-                .Setup(_ => _.GetSceneContext(0))
+                .Setup(_ => _.GetSceneContext(It.IsAny<int>()))
                 .Returns(_parentContextMoq.Object);
 
             var sceneContextService = new SceneContextService();
@@ -214,13 +183,13 @@ namespace MicoContextTest
             }
 
             _sceneContextRepositoryMoq
-                .Setup(_ => _.SetSceneContext(0, _contextMoq.Object))
+                .Setup(_ => _.SetSceneContext(It.IsAny<int>(), It.IsAny<IContext>()))
                 .Returns(true);
             _sceneContextHelper
-                .Setup(_ => _.GetContextsInScene(default))
+                .Setup(_ => _.GetContextsInScene(It.IsAny<Scene>()))
                 .Returns(childrenContextMoq.Select(_ => _.Object).Concat(new[] {_contextMoq.Object}).ToArray);
             _sceneContextHelper
-                .Setup(_ => _.GetComponentsInScene(default))
+                .Setup(_ => _.GetComponentsInScene(It.IsAny<Scene>()))
                 .Returns(new Component[0]);
 
             var sceneContextService = new SceneContextService();
@@ -239,13 +208,13 @@ namespace MicoContextTest
         {
             // setup
             _sceneContextRepositoryMoq
-                .Setup(_ => _.SetSceneContext(0, _contextMoq.Object))
+                .Setup(_ => _.SetSceneContext(It.IsAny<int>(), It.IsAny<IContext>()))
                 .Returns(true);
             _sceneContextHelper
-                .Setup(_ => _.GetContextsInScene(default))
+                .Setup(_ => _.GetContextsInScene(It.IsAny<Scene>()))
                 .Returns(new[] {_contextMoq.Object});
             _sceneContextHelper
-                .Setup(_ => _.GetComponentsInScene(default))
+                .Setup(_ => _.GetComponentsInScene(It.IsAny<Scene>()))
                 .Returns(new Component[0]);
             _contextMoq.SetupGet(_ => _.Installers)
                 .Returns(_installersMoq.Select(_ => _.Object));
@@ -281,13 +250,13 @@ namespace MicoContextTest
                 new GameObject().AddComponent<MockComponent>(),
             };
             _sceneContextRepositoryMoq
-                .Setup(_ => _.SetSceneContext(0, sceneContextMoq.Object))
+                .Setup(_ => _.SetSceneContext(It.IsAny<int>(), It.IsAny<IContext>()))
                 .Returns(true);
             _sceneContextHelper
-                .Setup(_ => _.GetContextsInScene(default))
+                .Setup(_ => _.GetContextsInScene(It.IsAny<Scene>()))
                 .Returns(new[] {sceneContextMoq.Object});
             _sceneContextHelper
-                .Setup(_ => _.GetComponentsInScene(default))
+                .Setup(_ => _.GetComponentsInScene(It.IsAny<Scene>()))
                 .Returns(components);
 
             var sceneContextService = new SceneContextService();
@@ -322,17 +291,14 @@ namespace MicoContextTest
         {
             // setup
             var sceneContextService = new SceneContextService();
-            var scene = default(Scene);
             _sceneRepositoryMoq
-                .Setup(_ => _.GetCacheScene("mock"))
-                .Returns(scene);
+                .Setup(_ => _.GetCacheScene(It.IsAny<string>()))
+                .Returns(() => null);
             ContextContainer.Inject(sceneContextService);
-            SceneManager.LoadScene(-1);
             // exercise
-            var context = sceneContextService.GetSceneContextOrDefault("mock");
+            var context = sceneContextService.GetSceneContextOrDefault("error_mock");
             // verify
             Assert.IsNull(context);
-            Assert.IsFalse(scene.IsValid());
             _sceneContextRepositoryMoq
                 .Verify(_ => _.HasSceneContext(It.IsAny<int>()), Times.Never);
         }
@@ -342,10 +308,9 @@ namespace MicoContextTest
         {
             // setup
             var sceneContextService = new SceneContextService();
-            var scene = SceneManager.GetActiveScene();
             _sceneRepositoryMoq
-                .Setup(_ => _.GetCacheScene("mock"))
-                .Returns(scene);
+                .Setup(_ => _.GetCacheScene(It.IsAny<string>()))
+                .Returns(SceneManager.GetActiveScene());
             ContextContainer.Inject(sceneContextService);
             // exercise
             var context = sceneContextService.GetSceneContextOrDefault("mock");
@@ -353,6 +318,26 @@ namespace MicoContextTest
             Assert.IsNull(context);
             _sceneContextRepositoryMoq
                 .Verify(_ => _.HasSceneContext(It.IsAny<int>()), Times.AtLeastOnce);
+        }
+
+        [Test]
+        public void test_GetSceneContextOrDefault実行時HasSceneContextがtrueの時GetSceneContextが呼ばれること()
+        {
+            // setup
+            var sceneContextService = new SceneContextService();
+            _sceneContextRepositoryMoq
+                .Setup(_ => _.HasSceneContext(It.IsAny<int>()))
+                .Returns(true);
+            _sceneRepositoryMoq
+                .Setup(_ => _.GetCacheScene(It.IsAny<string>()))
+                .Returns(SceneManager.GetActiveScene());
+            ContextContainer.Inject(sceneContextService);
+            // exercise
+            var context = sceneContextService.GetSceneContextOrDefault("mock");
+            // verify
+            Assert.IsNull(context);
+            _sceneContextRepositoryMoq
+                .Verify(_ => _.GetSceneContext(It.IsAny<int>()), Times.AtLeastOnce);
         }
 #endif
     }
