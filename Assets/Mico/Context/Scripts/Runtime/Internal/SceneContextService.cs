@@ -26,7 +26,7 @@ namespace Mico.Context.Internal
             }
             else
             {
-                var parentScene = GetScene(scenePath);
+                var parentScene = _sceneRepository.GetCacheScene(scenePath);
                 sceneContext.SetContainer(_sceneContextRepository.HasSceneContext(parentScene.handle)
                     ? new DiContainer(_sceneContextRepository.GetSceneContext(parentScene.handle).Container)
                     : new DiContainer());
@@ -34,62 +34,23 @@ namespace Mico.Context.Internal
 
             foreach (var context in contextSceneAll)
             {
-                SetContainer(context, context.ParentContext ?? sceneContext);
+                context.SetContainer(new DiContainer((context.ParentContext ?? sceneContext).Container));
             }
 
             foreach (var context in new[] {sceneContext}.Concat(contextSceneAll))
             {
-                Compile(context);
+                foreach (var installer in context.Installers)
+                {
+                    installer?.InstallRegisters(context.Container);
+                }
+
+                context.Container.Compile();
             }
 
-            Inject(sceneContext, _helper.GetComponentsInScene(scene));
-            return true;
-        }
-
-        public void RemoveSceneContext(Scene scene)
-        {
-            _sceneContextRepository.RemoveSceneContext(scene.handle);
-        }
-
-        public IContext GetSceneContextOrDefault(string scenePath)
-        {
-            var parentScene = GetScene(scenePath);
-            return !parentScene.IsValid() ? null : GetSceneContextOrDefault(parentScene);
-        }
-
-        private IContext GetSceneContextOrDefault(Scene scene)
-        {
-            return _sceneContextRepository.HasSceneContext(scene.handle)
-                ? _sceneContextRepository.GetSceneContext(scene.handle)
-                : null;
-        }
-
-        private Scene GetScene(string path)
-        {
-            return _sceneRepository.GetCacheScene(path);
-        }
-
-        private void SetContainer(IContext context, IContext parentContext)
-        {
-            context.SetContainer(parentContext != null ? new DiContainer(parentContext.Container) : new DiContainer());
-        }
-
-        private void Compile(IContext context)
-        {
-            foreach (var installer in context.Installers)
-            {
-                installer?.InstallRegisters(context.Container);
-            }
-
-            context.Container.Compile();
-        }
-
-        private void Inject(IContext context, IEnumerable<Component> componentsInScene)
-        {
-            foreach (var component in componentsInScene)
+            foreach (var component in _helper.GetComponentsInScene(scene))
             {
                 if (component.GetType().GetCustomAttribute<IgnoreInjectionAttribute>() != null) continue;
-                var parentContext = _helper.GetParentContext(component) ?? context;
+                var parentContext = _helper.GetParentContext(component) ?? sceneContext;
                 try
                 {
                     _helper.Inject(parentContext.Container, component);
@@ -106,6 +67,22 @@ namespace Mico.Context.Internal
                     }
                 }
             }
+
+            return true;
+        }
+
+        public void RemoveSceneContext(Scene scene)
+        {
+            _sceneContextRepository.RemoveSceneContext(scene.handle);
+        }
+
+        public IContext GetSceneContextOrDefault(string scenePath)
+        {
+            var parentScene = _sceneRepository.GetCacheScene(scenePath);
+            if (!parentScene.IsValid()) return null;
+            return _sceneContextRepository.HasSceneContext(parentScene.handle)
+                ? _sceneContextRepository.GetSceneContext(parentScene.handle)
+                : null;
         }
     }
 }

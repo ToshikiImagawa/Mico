@@ -8,6 +8,7 @@ using Mico.Internal;
 #if MICO_TEST_ADD_MOQ
 using Mico.Context;
 using Moq;
+using UnityEngine.SceneManagement;
 #endif
 using NUnit.Framework;
 using UnityEngine;
@@ -300,6 +301,58 @@ namespace MicoContextTest
             _sceneContextHelper
                 .Verify(_ => _.Inject(It.IsAny<DiContainer>(), It.IsAny<IgnoreComponent>()),
                     Times.Never);
+        }
+
+        [Test]
+        public void test_RemoveSceneContextが呼ばれた時ISceneContextRepositoryのRemoveSceneContextが呼ばれること()
+        {
+            // setup
+            var sceneContextService = new SceneContextService();
+            ContextContainer.Inject(sceneContextService);
+            var scene = default(Scene);
+            // exercise
+            sceneContextService.RemoveSceneContext(scene);
+            // verify
+            _sceneContextRepositoryMoq
+                .Verify(_ => _.RemoveSceneContext(scene.handle), Times.AtLeastOnce);
+        }
+
+        [Test]
+        public void test_GetSceneContextOrDefault実行時scenePathが無効な時nullを返しHasSceneContextが呼ばれないこと()
+        {
+            // setup
+            var sceneContextService = new SceneContextService();
+            var scene = default(Scene);
+            _sceneRepositoryMoq
+                .Setup(_ => _.GetCacheScene("mock"))
+                .Returns(scene);
+            ContextContainer.Inject(sceneContextService);
+            SceneManager.LoadScene(-1);
+            // exercise
+            var context = sceneContextService.GetSceneContextOrDefault("mock");
+            // verify
+            Assert.IsNull(context);
+            Assert.IsFalse(scene.IsValid());
+            _sceneContextRepositoryMoq
+                .Verify(_ => _.HasSceneContext(It.IsAny<int>()), Times.Never);
+        }
+
+        [Test]
+        public void test_GetSceneContextOrDefault実行時scenePathが有効な時HasSceneContextが呼ばれること()
+        {
+            // setup
+            var sceneContextService = new SceneContextService();
+            var scene = SceneManager.GetActiveScene();
+            _sceneRepositoryMoq
+                .Setup(_ => _.GetCacheScene("mock"))
+                .Returns(scene);
+            ContextContainer.Inject(sceneContextService);
+            // exercise
+            var context = sceneContextService.GetSceneContextOrDefault("mock");
+            // verify
+            Assert.IsNull(context);
+            _sceneContextRepositoryMoq
+                .Verify(_ => _.HasSceneContext(It.IsAny<int>()), Times.AtLeastOnce);
         }
 #endif
     }
