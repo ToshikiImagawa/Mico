@@ -7,6 +7,6 @@ namespace Mico.Context.Internal
 {
     internal interface IGameObjectContextService
     {
-        IContext GetGameObjectContextOrDefault(Component component, IContext defaultContext = null);
+        IContext GetGameObjectContextOrDefault(Component component, IContext defaultContext);
     }
 }

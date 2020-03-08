@@ -81,6 +81,7 @@
           <e p="Context" t="Include">
             <e p="Tests" t="Include">
               <e p="Editor" t="Include">
+                <e p="GameObjectContextServiceTests.cs" t="Include" />
                 <e p="Mico.Context.Tests-Editor.asmdef" t="Include" />
                 <e p="SceneContextServiceTests.cs" t="Include" />
               </e>

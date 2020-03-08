@@ -4,12 +4,11 @@
 using System.Linq;
 using Mico;
 using Mico.Context.Internal;
-using Mico.Internal;
-#if MICO_TEST_ADD_MOQ
 using Mico.Context;
+#if MICO_TEST_ADD_MOQ
 using Moq;
-using UnityEngine.SceneManagement;
 #endif
+using UnityEngine.SceneManagement;
 using NUnit.Framework;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
