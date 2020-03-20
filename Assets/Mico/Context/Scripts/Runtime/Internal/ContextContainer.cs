@@ -12,19 +12,18 @@ namespace Mico.Context.Internal
             return _container.Resolve<T>();
         }
 
-        public static void Inject(object obj)
-        {
-            _container.Inject(obj);
-        }
-
         static ContextContainer()
         {
             _container = new DiContainer();
             _container.RegisterNew<ISceneRepository, SceneRepository>().AsSingle();
-            _container.RegisterNew<ISceneContextRepository, SceneContextRepository>().AsSingle();
+            _container.RegisterNew<IContextRepository, ContextRepository>()
+                .WithId(typeof(SceneContextService))
+                .AsSingle();
             _container.RegisterNew<ISceneContextService, SceneContextService>();
             _container.RegisterNew<ISceneContextHelper, SceneContextHelper>();
-            _container.RegisterNew<IGameObjectContextRepository, GameObjectContextRepository>();
+            _container.RegisterNew<IContextRepository, ContextRepository>()
+                .WithId(typeof(GameObjectContextService))
+                .AsSingle();
             _container.RegisterNew<IGameObjectContextService, GameObjectContextService>();
             _container.RegisterNew<IGameObjectContextHelper, GameObjectContextHelper>();
             _container.Compile();

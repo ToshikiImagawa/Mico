@@ -12,13 +12,15 @@ namespace Mico.Context.Internal
 {
     internal class SceneContextService : ISceneContextService
     {
-        [InjectField] private ISceneContextRepository _sceneContextRepository = default;
+        [InjectField(Id = typeof(SceneContextService))]
+        private IContextRepository _sceneContextRepository = default;
+
         [InjectField] private ISceneRepository _sceneRepository = default;
         [InjectField] private ISceneContextHelper _helper = default;
 
         public bool Boot(Scene scene, IContext sceneContext, string scenePath = null)
         {
-            if (!_sceneContextRepository.SetSceneContext(scene.handle, sceneContext)) return false;
+            if (!_sceneContextRepository.SetContext(scene.handle, sceneContext)) return false;
             var contextSceneAll = _helper.GetContextsInScene(scene).Where(_ => _ != sceneContext).ToArray();
             if (string.IsNullOrEmpty(scenePath))
             {
@@ -71,7 +73,7 @@ namespace Mico.Context.Internal
 
         public void RemoveSceneContext(Scene scene)
         {
-            _sceneContextRepository.RemoveSceneContext(scene.handle);
+            _sceneContextRepository.RemoveContext(scene.handle);
         }
 
         public IContext GetSceneContextOrDefault(string scenePath)
@@ -79,8 +81,8 @@ namespace Mico.Context.Internal
             var parentScene = _sceneRepository.GetCacheScene(scenePath);
             if (!parentScene.HasValue) return null;
             var handle = parentScene.Value.handle;
-            return _sceneContextRepository.HasSceneContext(handle)
-                ? _sceneContextRepository.GetSceneContext(handle)
+            return _sceneContextRepository.HasContext(handle)
+                ? _sceneContextRepository.GetContext(handle)
                 : null;
         }
     }

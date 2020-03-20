@@ -15,7 +15,7 @@ namespace MicoContextTest
 {
     public class GameObjectContextServiceTests
     {
-        private IGameObjectContextRepository _gameObjectContextRepositoryMock;
+        private IContextRepository _gameObjectContextRepositoryMock;
         private IGameObjectContextHelper _gameObjectContextHelperMock;
         private IContext _contextMock;
         private IContext _defaultContextMock;
@@ -25,14 +25,15 @@ namespace MicoContextTest
         {
             var container = new DiContainer();
 #if MICO_TEST_ADD_NSUBSTITUTE
-            _gameObjectContextRepositoryMock = Substitute.For<IGameObjectContextRepository>();
+            _gameObjectContextRepositoryMock = Substitute.For<IContextRepository>();
             _gameObjectContextHelperMock = Substitute.For<IGameObjectContextHelper>();
             _contextMock = Substitute.For<IContext>();
             _defaultContextMock = Substitute.For<IContext>();
             _contextMock.Container.Returns(new DiContainer());
             _defaultContextMock.Container.Returns(new DiContainer());
 #endif
-            container.RegisterInstance<IGameObjectContextRepository>(_gameObjectContextRepositoryMock);
+            container.RegisterInstance<IContextRepository>(_gameObjectContextRepositoryMock)
+                .WithId(typeof(GameObjectContextService)).AsSingle();
             container.RegisterInstance<IGameObjectContextHelper>(_gameObjectContextHelperMock);
             container.RegisterNew<IGameObjectContextService, GameObjectContextService>();
             container.Compile();
@@ -53,10 +54,10 @@ namespace MicoContextTest
                 .GetComponentInParentOnly<IContext>(Arg.Any<Component>())
                 .ReturnsForAnyArgs(_ => null);
             _gameObjectContextRepositoryMock
-                .HasGameObjectContext(instanceId)
+                .HasContext(instanceId)
                 .ReturnsForAnyArgs(true);
             _gameObjectContextRepositoryMock
-                .GetGameObjectContext(instanceId)
+                .GetContext(instanceId)
                 .ReturnsForAnyArgs(_contextMock);
             var component = new GameObject().AddComponent<GameObjectContext>();
             // exercise
@@ -83,10 +84,10 @@ namespace MicoContextTest
                 .GetComponentInParentOnly<IContext>(Arg.Any<Component>())
                 .ReturnsForAnyArgs(_ => parentComponent);
             _gameObjectContextRepositoryMock
-                .HasGameObjectContext(instanceId)
+                .HasContext(instanceId)
                 .Returns(false);
             _gameObjectContextRepositoryMock
-                .GetGameObjectContext(instanceId)
+                .GetContext(instanceId)
                 .Returns(_contextMock);
             // exercise
             var gameObjectContext =
@@ -109,10 +110,10 @@ namespace MicoContextTest
                 .GetComponentInParentOnly<IContext>(Arg.Any<Component>())
                 .ReturnsForAnyArgs(_ => null);
             _gameObjectContextRepositoryMock
-                .HasGameObjectContext(instanceId)
+                .HasContext(instanceId)
                 .Returns(false);
             _gameObjectContextRepositoryMock
-                .GetGameObjectContext(instanceId)
+                .GetContext(instanceId)
                 .Returns(_contextMock);
             var component = new GameObject().AddComponent<GameObjectContext>();
             // exercise

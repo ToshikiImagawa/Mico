@@ -21,17 +21,17 @@
                 <e p="IInstaller.cs" t="Include" />
                 <e p="Internal" t="Include">
                   <e p="ContextContainer.cs" t="Include" />
-                  <e p="GameObjectContextRepository.cs" t="Include" />
+                  <e p="ContextRepository.cs" t="Include" />
+                  <e p="GameObjectContextHelper.cs" t="Include" />
                   <e p="GameObjectContextService.cs" t="Include" />
                   <e p="IContext.cs" t="Include" />
-                  <e p="IGameObjectContextRepository.cs" t="Include" />
+                  <e p="IContextRepository.cs" t="Include" />
+                  <e p="IGameObjectContextHelper.cs" t="Include" />
                   <e p="IGameObjectContextService.cs" t="Include" />
                   <e p="ISceneContextHelper.cs" t="Include" />
-                  <e p="ISceneContextRepository.cs" t="Include" />
                   <e p="ISceneContextService.cs" t="Include" />
                   <e p="ISceneRepository.cs" t="Include" />
                   <e p="SceneContextHelper.cs" t="Include" />
-                  <e p="SceneContextRepository.cs" t="Include" />
                   <e p="SceneContextService.cs" t="Include" />
                   <e p="SceneRepository.cs" t="Include" />
                 </e>
@@ -81,6 +81,7 @@
           <e p="Context" t="Include">
             <e p="Tests" t="Include">
               <e p="Editor" t="Include">
+                <e p="ContextRepositoryTests.cs" t="Include" />
                 <e p="GameObjectContextServiceTests.cs" t="Include" />
                 <e p="Mico.Context.Tests-Editor.asmdef" t="Include" />
                 <e p="SceneContextServiceTests.cs" t="Include" />
