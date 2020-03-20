@@ -26,6 +26,7 @@ namespace Mico.Context.Internal
             _container.RegisterNew<ISceneContextHelper, SceneContextHelper>();
             _container.RegisterNew<IGameObjectContextRepository, GameObjectContextRepository>();
             _container.RegisterNew<IGameObjectContextService, GameObjectContextService>();
+            _container.RegisterNew<IGameObjectContextHelper, GameObjectContextHelper>();
             _container.Compile();
         }
 
