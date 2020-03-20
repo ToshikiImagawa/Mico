@@ -19,9 +19,6 @@ namespace MicoContextTest
         private ISceneRepository _sceneRepositoryMock;
         private ISceneContextRepository _sceneContextRepositoryMock;
         private ISceneContextHelper _sceneContextHelperMock;
-        private ISceneContextService _sceneContextServiceMock;
-        private IGameObjectContextRepository _gameObjectContextRepositoryMock;
-        private IGameObjectContextService _gameObjectContextServiceMock;
         private IContext _contextMock;
         private IContext _parentContextMock;
         private IInstaller[] _installersMock;
@@ -34,9 +31,6 @@ namespace MicoContextTest
             _sceneRepositoryMock = Substitute.For<ISceneRepository>();
             _sceneContextRepositoryMock = Substitute.For<ISceneContextRepository>();
             _sceneContextHelperMock = Substitute.For<ISceneContextHelper>();
-            _sceneContextServiceMock = Substitute.For<ISceneContextService>();
-            _gameObjectContextRepositoryMock = Substitute.For<IGameObjectContextRepository>();
-            _gameObjectContextServiceMock = Substitute.For<IGameObjectContextService>();
             _contextMock = Substitute.For<IContext>();
             _parentContextMock = Substitute.For<IContext>();
             _installersMock = new[]
@@ -52,23 +46,20 @@ namespace MicoContextTest
             container.RegisterInstance<ISceneRepository>(_sceneRepositoryMock).AsSingle();
             container.RegisterInstance<ISceneContextRepository>(_sceneContextRepositoryMock).AsSingle();
             container.RegisterInstance<ISceneContextHelper>(_sceneContextHelperMock);
-            container.RegisterInstance<ISceneContextService>(_sceneContextServiceMock);
-            container.RegisterInstance<IGameObjectContextRepository>(_gameObjectContextRepositoryMock);
-            container.RegisterInstance<IGameObjectContextService>(_gameObjectContextServiceMock);
+            container.RegisterNew<ISceneContextService, SceneContextService>();
             container.Compile();
             ContextContainer.Swap(container);
         }
 
 #if MICO_TEST_ADD_NSUBSTITUTE
         [Test]
-        public void test_SceneContextServiceのBoot時にSetSceneContextが失敗した時falseが返ること()
+        public void test_Boot時にSetSceneContextが失敗した時falseが返ること()
         {
             // setup
             _sceneContextRepositoryMock
                 .SetSceneContext(Arg.Any<int>(), Arg.Any<IContext>())
                 .ReturnsForAnyArgs(false);
-            var sceneContextService = new SceneContextService();
-            ContextContainer.Inject(sceneContextService);
+            var sceneContextService = ContextContainer.Resolve<ISceneContextService>();
             // exercise
             var isSuccessful = sceneContextService.Boot(default, _contextMock, "");
             // verify
@@ -76,14 +67,13 @@ namespace MicoContextTest
         }
 
         [Test]
-        public void test_SceneContextServiceのBoot時にSetSceneContextが成功した時trueが返ること()
+        public void test_Boot時にSetSceneContextが成功した時trueが返ること()
         {
             // setup
             _sceneContextRepositoryMock
                 .SetSceneContext(Arg.Any<int>(), Arg.Any<IContext>())
                 .ReturnsForAnyArgs(true);
-            var sceneContextService = new SceneContextService();
-            ContextContainer.Inject(sceneContextService);
+            var sceneContextService = ContextContainer.Resolve<ISceneContextService>();
             // exercise
             var isSuccessful = sceneContextService.Boot(default, _contextMock, "");
             // verify
@@ -91,7 +81,7 @@ namespace MicoContextTest
         }
 
         [Test]
-        public void test_SceneContextServiceのBoot時にscenePathがnullの時SetContainerが呼ばれること()
+        public void test_Boot時にscenePathがnullの時SetContainerが呼ばれること()
         {
             // setup
 
@@ -101,8 +91,7 @@ namespace MicoContextTest
             _sceneContextHelperMock
                 .GetContextsInScene(Arg.Any<Scene>())
                 .ReturnsForAnyArgs(new[] {_contextMock});
-            var sceneContextService = new SceneContextService();
-            ContextContainer.Inject(sceneContextService);
+            var sceneContextService = ContextContainer.Resolve<ISceneContextService>();
             // exercise
             sceneContextService.Boot(default, _contextMock);
             // verify
@@ -112,7 +101,7 @@ namespace MicoContextTest
         }
 
         [Test]
-        public void test_SceneContextServiceのBoot時にscenePathが有効の時SetContainerとGetCacheSceneが呼ばれること()
+        public void test_Boot時にscenePathが有効の時SetContainerとGetCacheSceneが呼ばれること()
         {
             // setup
 
@@ -126,8 +115,7 @@ namespace MicoContextTest
                 .GetSceneContext(Arg.Any<int>())
                 .ReturnsForAnyArgs(_parentContextMock);
 
-            var sceneContextService = new SceneContextService();
-            ContextContainer.Inject(sceneContextService);
+            var sceneContextService = ContextContainer.Resolve<ISceneContextService>();
             // exercise
             sceneContextService.Boot(default, _contextMock, "mockScene");
             // verify
@@ -140,7 +128,7 @@ namespace MicoContextTest
         }
 
         [Test]
-        public void test_SceneContextServiceのBoot時HasSceneContextがfalseの時GetSceneContextが呼ばれないこと()
+        public void test_Boot時HasSceneContextがfalseの時GetSceneContextが呼ばれないこと()
         {
             // setup
             _sceneContextRepositoryMock
@@ -156,8 +144,7 @@ namespace MicoContextTest
                 .GetSceneContext(Arg.Any<int>())
                 .ReturnsForAnyArgs(_parentContextMock);
 
-            var sceneContextService = new SceneContextService();
-            ContextContainer.Inject(sceneContextService);
+            var sceneContextService = ContextContainer.Resolve<ISceneContextService>();
             // exercise
             sceneContextService.Boot(default, _contextMock, "mockScene");
             // verify
@@ -168,7 +155,7 @@ namespace MicoContextTest
 
 
         [Test]
-        public void test_SceneContextServiceのBoot時にGetContextsInSceneが複数返す時各ContextのSetContainerが呼ばれること()
+        public void test_Boot時にGetContextsInSceneが複数返す時各ContextのSetContainerが呼ばれること()
         {
             // setup
             var childrenContextMoq = new[]
@@ -190,8 +177,7 @@ namespace MicoContextTest
                 .GetContextsInScene(Arg.Any<Scene>())
                 .ReturnsForAnyArgs(childrenContextMoq);
 
-            var sceneContextService = new SceneContextService();
-            ContextContainer.Inject(sceneContextService);
+            var sceneContextService = ContextContainer.Resolve<ISceneContextService>();
             // exercise
             sceneContextService.Boot(default, _contextMock);
             // verify
@@ -203,7 +189,7 @@ namespace MicoContextTest
         }
 
         [Test]
-        public void test_SceneContextServiceのBoot時にInstallersが複数返す時各InstallerのInstallRegistersが呼ばれること()
+        public void test_Boot時にInstallersが複数返す時各InstallerのInstallRegistersが呼ばれること()
         {
             // setup
             _sceneContextRepositoryMock
@@ -215,8 +201,7 @@ namespace MicoContextTest
             _contextMock.Installers
                 .ReturnsForAnyArgs(_installersMock);
 
-            var sceneContextService = new SceneContextService();
-            ContextContainer.Inject(sceneContextService);
+            var sceneContextService = ContextContainer.Resolve<ISceneContextService>();
             // exercise
             sceneContextService.Boot(default, _contextMock);
             // verify
@@ -227,7 +212,7 @@ namespace MicoContextTest
         }
 
         [Test]
-        public void test_SceneContextServiceのBoot時にGetComponentsInSceneが複数返す時各Componentに対してInjectが呼ばれること()
+        public void test_Boot時にGetComponentsInSceneが複数返す時各Componentに対してInjectが呼ばれること()
         {
             // setup
             var sceneContextMock = Substitute.For<IContext>();
@@ -254,8 +239,7 @@ namespace MicoContextTest
                 .GetComponentsInScene(Arg.Any<Scene>())
                 .ReturnsForAnyArgs(components);
 
-            var sceneContextService = new SceneContextService();
-            ContextContainer.Inject(sceneContextService);
+            var sceneContextService = ContextContainer.Resolve<ISceneContextService>();
             // exercise
             sceneContextService.Boot(default, sceneContextMock);
             // verify
@@ -271,8 +255,7 @@ namespace MicoContextTest
         public void test_RemoveSceneContextが呼ばれた時ISceneContextRepositoryのRemoveSceneContextが呼ばれること()
         {
             // setup
-            var sceneContextService = new SceneContextService();
-            ContextContainer.Inject(sceneContextService);
+            var sceneContextService = ContextContainer.Resolve<ISceneContextService>();
             var scene = default(Scene);
             // exercise
             sceneContextService.RemoveSceneContext(scene);
@@ -286,11 +269,10 @@ namespace MicoContextTest
         public void test_GetSceneContextOrDefault実行時scenePathが無効な時nullを返しHasSceneContextが呼ばれないこと()
         {
             // setup
-            var sceneContextService = new SceneContextService();
+            var sceneContextService = ContextContainer.Resolve<ISceneContextService>();
             _sceneRepositoryMock
                 .GetCacheScene(Arg.Any<string>())
                 .ReturnsForAnyArgs(_ => null);
-            ContextContainer.Inject(sceneContextService);
             // exercise
             var context = sceneContextService.GetSceneContextOrDefault("error_mock");
             // verify
@@ -304,11 +286,10 @@ namespace MicoContextTest
         public void test_GetSceneContextOrDefault実行時scenePathが有効な時HasSceneContextが呼ばれること()
         {
             // setup
-            var sceneContextService = new SceneContextService();
+            var sceneContextService = ContextContainer.Resolve<ISceneContextService>();
             _sceneRepositoryMock
                 .GetCacheScene(Arg.Any<string>())
                 .ReturnsForAnyArgs(SceneManager.GetActiveScene());
-            ContextContainer.Inject(sceneContextService);
             // exercise
             var context = sceneContextService.GetSceneContextOrDefault("mock");
             // verify
@@ -321,7 +302,7 @@ namespace MicoContextTest
         public void test_GetSceneContextOrDefault実行時HasSceneContextがtrueの時GetSceneContextが呼ばれること()
         {
             // setup
-            var sceneContextService = new SceneContextService();
+            var sceneContextService = ContextContainer.Resolve<ISceneContextService>();
             var activeScene = SceneManager.GetActiveScene();
             _sceneContextRepositoryMock
                 .HasSceneContext(Arg.Any<int>())
@@ -329,7 +310,6 @@ namespace MicoContextTest
             _sceneRepositoryMock
                 .GetCacheScene(Arg.Any<string>())
                 .ReturnsForAnyArgs(activeScene);
-            ContextContainer.Inject(sceneContextService);
             // exercise
             var context = sceneContextService.GetSceneContextOrDefault("mock");
             // verify

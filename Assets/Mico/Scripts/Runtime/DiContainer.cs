@@ -176,12 +176,18 @@ namespace Mico
 
         public void Dispose()
         {
+            var disposableCaches = _cache.Values.OfType<IDisposable>().ToArray();
             if (_parentContainer == null)
             {
                 _registerInfoPool.Clear();
                 _factoryTupleListPool.Clear();
                 _factoryListPool.Clear();
                 _cache.Clear();
+            }
+
+            foreach (var disposable in disposableCaches)
+            {
+                disposable.Dispose();
             }
 
             while (_registerInfos.Count > 0)

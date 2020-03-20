@@ -15,6 +15,11 @@ namespace Mico.Context
         IContext IContext.ParentContext => ParentContext;
         IEnumerable<IInstaller> IContext.Installers => installers;
 
+        public static void Shutdown()
+        {
+            ContextContainer.Dispose();
+        }
+
         void IContext.SetContainer(DiContainer container)
         {
             _container = container;
