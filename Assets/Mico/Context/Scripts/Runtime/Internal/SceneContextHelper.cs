@@ -6,24 +6,24 @@ using UnityEngine.SceneManagement;
 
 namespace Mico.Context.Internal
 {
-    internal class SceneContextHelper : ISceneContextHelper
+    internal class SceneContextHelper
     {
-        public IContext GetParentContext(Component component)
+        public virtual IContext GetParentContext(Component component)
         {
             return component.GetComponentInParent<IContext>();
         }
 
-        public IContext[] GetContextsInScene(Scene scene)
+        public virtual IContext[] GetContextsInScene(Scene scene)
         {
             return scene.GetComponentsInScene<IContext>();
         }
 
-        public Component[] GetComponentsInScene(Scene scene)
+        public virtual Component[] GetComponentsInScene(Scene scene)
         {
             return scene.GetComponentsInScene<Component>();
         }
 
-        public void Inject(DiContainer container, Component component)
+        public virtual void Inject(DiContainer container, Component component)
         {
             container.Inject(component);
         }

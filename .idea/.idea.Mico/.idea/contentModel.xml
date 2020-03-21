@@ -26,11 +26,10 @@
                   <e p="GameObjectContextService.cs" t="Include" />
                   <e p="IContext.cs" t="Include" />
                   <e p="IContextRepository.cs" t="Include" />
-                  <e p="IGameObjectContextHelper.cs" t="Include" />
                   <e p="IGameObjectContextService.cs" t="Include" />
-                  <e p="ISceneContextHelper.cs" t="Include" />
                   <e p="ISceneContextService.cs" t="Include" />
                   <e p="ISceneRepository.cs" t="Include" />
+                  <e p="MicoSceneManager.cs" t="Include" />
                   <e p="SceneContextHelper.cs" t="Include" />
                   <e p="SceneContextService.cs" t="Include" />
                   <e p="SceneRepository.cs" t="Include" />
@@ -85,6 +84,7 @@
                 <e p="GameObjectContextServiceTests.cs" t="Include" />
                 <e p="Mico.Context.Tests-Editor.asmdef" t="Include" />
                 <e p="SceneContextServiceTests.cs" t="Include" />
+                <e p="SceneRepositoryTests.cs" t="Include" />
               </e>
               <e p="Runtime" t="Include">
                 <e p="Mico.Context.Tests.asmdef" t="Include" />

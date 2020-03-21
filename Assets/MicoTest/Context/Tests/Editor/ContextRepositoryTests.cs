@@ -78,14 +78,26 @@ namespace MicoContextTest
         }
 
         [Test]
-        public void
-            test_RemoveContext実行時に設定済みのGameObjectContextのInstanceIdを渡した時設定済みのGameObjectContextが削除されてること()
+        public void test_RemoveContext実行時に設定済みのGameObjectContextのInstanceIdを渡した時設定済みのGameObjectContextが削除されてること()
         {
             // setup
             var component = new GameObject().AddComponent<GameObjectContext>();
             _gameObjectContextRepository.SetContext(component.GetInstanceID(), component);
             // exercise
             _gameObjectContextRepository.RemoveContext(component.GetInstanceID());
+            var actual = _gameObjectContextRepository.HasContext(component.GetInstanceID());
+            // verify
+            Assert.IsFalse(actual);
+        }
+
+        [Test]
+        public void test_Dispose実行時に設定済みのGameObjectContextのInstanceIdを渡した時設定済みのGameObjectContextが削除されてること()
+        {
+            // setup
+            var component = new GameObject().AddComponent<GameObjectContext>();
+            _gameObjectContextRepository.SetContext(component.GetInstanceID(), component);
+            // exercise
+            _gameObjectContextRepository.Dispose();
             var actual = _gameObjectContextRepository.HasContext(component.GetInstanceID());
             // verify
             Assert.IsFalse(actual);

@@ -20,12 +20,13 @@ namespace Mico.Context.Internal
                 .WithId(typeof(SceneContextService))
                 .AsSingle();
             _container.RegisterNew<ISceneContextService, SceneContextService>();
-            _container.RegisterNew<ISceneContextHelper, SceneContextHelper>();
+            _container.RegisterNew<MicoSceneManager>();
+            _container.RegisterNew<SceneContextHelper>();
             _container.RegisterNew<IContextRepository, ContextRepository>()
                 .WithId(typeof(GameObjectContextService))
                 .AsSingle();
             _container.RegisterNew<IGameObjectContextService, GameObjectContextService>();
-            _container.RegisterNew<IGameObjectContextHelper, GameObjectContextHelper>();
+            _container.RegisterNew<GameObjectContextHelper>();
             _container.Compile();
         }
 

@@ -16,7 +16,7 @@ namespace MicoContextTest
     public class GameObjectContextServiceTests
     {
         private IContextRepository _gameObjectContextRepositoryMock;
-        private IGameObjectContextHelper _gameObjectContextHelperMock;
+        private GameObjectContextHelper _gameObjectContextHelperMock;
         private IContext _contextMock;
         private IContext _defaultContextMock;
 
@@ -26,7 +26,7 @@ namespace MicoContextTest
             var container = new DiContainer();
 #if MICO_TEST_ADD_NSUBSTITUTE
             _gameObjectContextRepositoryMock = Substitute.For<IContextRepository>();
-            _gameObjectContextHelperMock = Substitute.For<IGameObjectContextHelper>();
+            _gameObjectContextHelperMock = Substitute.For<GameObjectContextHelper>();
             _contextMock = Substitute.For<IContext>();
             _defaultContextMock = Substitute.For<IContext>();
             _contextMock.Container.Returns(new DiContainer());
@@ -34,7 +34,7 @@ namespace MicoContextTest
 #endif
             container.RegisterInstance<IContextRepository>(_gameObjectContextRepositoryMock)
                 .WithId(typeof(GameObjectContextService)).AsSingle();
-            container.RegisterInstance<IGameObjectContextHelper>(_gameObjectContextHelperMock);
+            container.RegisterInstance<GameObjectContextHelper>(_gameObjectContextHelperMock);
             container.RegisterNew<IGameObjectContextService, GameObjectContextService>();
             container.Compile();
             ContextContainer.Swap(container);

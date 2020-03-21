@@ -9,14 +9,14 @@ namespace Mico.Context.Internal
 {
     public class SceneRepository : ISceneRepository, IDisposable
     {
+        [InjectField] private MicoSceneManager _micoSceneManager = default;
         private readonly Dictionary<string, Scene> _sceneCache = new Dictionary<string, Scene>();
 
         public Scene? GetCacheScene(string scenePath)
         {
             if (_sceneCache.ContainsKey(scenePath)) return _sceneCache[scenePath];
 
-            var scene = SceneManager.GetSceneByPath(scenePath);
-            if (!scene.IsValid())
+            if (!_micoSceneManager.GetSceneByPath(scenePath, out var scene))
             {
                 MicoAssert.Throw($"{scenePath} is invalid Scene!");
                 return null;

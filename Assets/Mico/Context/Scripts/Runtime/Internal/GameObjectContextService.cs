@@ -10,7 +10,7 @@ namespace Mico.Context.Internal
         [InjectField(Id = typeof(GameObjectContextService))]
         private IContextRepository _repository = default;
 
-        [InjectField] private IGameObjectContextHelper _helper = default;
+        [InjectField] private GameObjectContextHelper _helper = default;
 
         public IContext GetGameObjectContextOrDefault(Component component, IContext defaultContext = null)
         {

@@ -18,7 +18,7 @@ namespace MicoContextTest
     {
         private ISceneRepository _sceneRepositoryMock;
         private IContextRepository _sceneContextRepositoryMock;
-        private ISceneContextHelper _sceneContextHelperMock;
+        private SceneContextHelper _sceneContextHelperMock;
         private IContext _contextMock;
         private IContext _parentContextMock;
         private IInstaller[] _installersMock;
@@ -30,7 +30,7 @@ namespace MicoContextTest
 #if MICO_TEST_ADD_NSUBSTITUTE
             _sceneRepositoryMock = Substitute.For<ISceneRepository>();
             _sceneContextRepositoryMock = Substitute.For<IContextRepository>();
-            _sceneContextHelperMock = Substitute.For<ISceneContextHelper>();
+            _sceneContextHelperMock = Substitute.For<SceneContextHelper>();
             _contextMock = Substitute.For<IContext>();
             _parentContextMock = Substitute.For<IContext>();
             _installersMock = new[]
@@ -46,7 +46,7 @@ namespace MicoContextTest
             container.RegisterInstance<ISceneRepository>(_sceneRepositoryMock).AsSingle();
             container.RegisterInstance<IContextRepository>(_sceneContextRepositoryMock)
                 .WithId(typeof(SceneContextService)).AsSingle();
-            container.RegisterInstance<ISceneContextHelper>(_sceneContextHelperMock);
+            container.RegisterInstance<SceneContextHelper>(_sceneContextHelperMock);
             container.RegisterNew<ISceneContextService, SceneContextService>();
             container.Compile();
             ContextContainer.Swap(container);
