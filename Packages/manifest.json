@@ -7,6 +7,7 @@
     "com.unity.purchasing": "2.0.3",
     "com.unity.textmeshpro": "1.4.1",
     "io.github.nsubstitute": "git@github.com:ToshikiImagawa/NSubstitute.git",
+    "org.castleproject.castle.core": "git@github.com:ToshikiImagawa/Castle-Core.git",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
@@ -41,7 +42,11 @@
   "lock": {
     "io.github.nsubstitute": {
       "revision": "HEAD",
-      "hash": "c13833400a04437afb4a806973b9ab2ca7fa907c"
+      "hash": "9e3eca04acc998a48fc1ee3e6ac1868b41a472d5"
+    },
+    "org.castleproject.castle.core": {
+      "revision": "HEAD",
+      "hash": "b89f5f6100c14820a8826965abc59a51e02d7f91"
     }
   }
 }
