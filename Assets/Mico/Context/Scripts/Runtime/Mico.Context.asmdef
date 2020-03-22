@@ -1,6 +1,8 @@
 {
-    "name": "Mico",
-    "references": [],
+    "name": "Mico.Context",
+    "references": [
+        "Mico"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],

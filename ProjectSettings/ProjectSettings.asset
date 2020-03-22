@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
+  companyName: com.comcreate-info.mico
   productName: Mini
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -501,7 +501,9 @@ PlayerSettings:
   webGLCompressionFormat: 1
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    1: MICO_TEST_ADD_NSUBSTITUTE
+    4: MICO_TEST_ADD_NSUBSTITUTE
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration: {}

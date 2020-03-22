@@ -22,12 +22,13 @@ namespace Mico.Internal
 
             var tupleGroup = values.GroupBy(value => value.GetHashCode()).ToArray();
             _indexFor = Math.Max(tupleGroup.Length - 1, 1);
-            var maxIndex = tupleGroup.Max(tuple => tuple.Key % _indexFor);
+            var maxIndex = tupleGroup.Max(tuple => GetIndex(tuple.Key));
             _factoryTable = new FactoryTuple[maxIndex + 1][];
             foreach (var factoryTuple in values)
             {
                 var hash = factoryTuple.GetHashCode();
-                var array = _factoryTable[hash % _indexFor];
+                var index = GetIndex(hash);
+                var array = _factoryTable[index];
                 if (array == null)
                 {
                     array = new FactoryTuple[1];
@@ -41,14 +42,14 @@ namespace Mico.Internal
                     array[array.Length - 1] = factoryTuple;
                 }
 
-                _factoryTable[hash % _indexFor] = array;
+                _factoryTable[index] = array;
             }
         }
 
         public bool TryGet(Type type, object id, out Func<object> factory)
         {
             var hash = Util.Reflection.HashCodeCombine(id, type);
-            var index = hash % _indexFor;
+            var index = GetIndex(hash);
             if (_factoryTable.Length > index)
             {
                 var array = _factoryTable[index];
@@ -67,6 +68,11 @@ namespace Mico.Internal
         public static FactoryTable Create(FactoryTuple[] values)
         {
             return new FactoryTable(values);
+        }
+
+        private int GetIndex(int hash)
+        {
+            return Math.Abs(hash % _indexFor);
         }
     }
 

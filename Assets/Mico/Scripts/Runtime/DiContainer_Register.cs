@@ -71,7 +71,7 @@ namespace Mico
             return RegisterNewBase(injectedTypes, instanceType, hitConstructorInfo, parameters);
         }
 
-        public IRegister RegisterInstance<T, TInstance>(TInstance instance) where TInstance : T
+        public IRegister RegisterInstance<T>(object instance)
         {
             return RegisterInstanceBase(new[] {typeof(T)}, instance);
         }

@@ -1,8 +1,13 @@
 {
-    "name": "Mico",
-    "references": [],
+    "name": "Mico.Context-Editor",
+    "references": [
+        "Mico",
+        "Mico.Context"
+    ],
     "optionalUnityReferences": [],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
