@@ -81,9 +81,12 @@
             <e p="Tests" t="Include">
               <e p="Editor" t="Include">
                 <e p="ContextRepositoryTests.cs" t="Include" />
+                <e p="ContextTests.cs" t="Include" />
                 <e p="GameObjectContextServiceTests.cs" t="Include" />
+                <e p="GameObjectContextTests.cs" t="Include" />
                 <e p="Mico.Context.Tests-Editor.asmdef" t="Include" />
                 <e p="SceneContextServiceTests.cs" t="Include" />
+                <e p="SceneContextTests.cs" t="Include" />
                 <e p="SceneRepositoryTests.cs" t="Include" />
               </e>
               <e p="Runtime" t="Include">

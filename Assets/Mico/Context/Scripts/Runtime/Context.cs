@@ -28,6 +28,7 @@ namespace Mico.Context
         protected virtual void OnDestroy()
         {
             _container?.Dispose();
+            _container = null;
             installers = null;
         }
     }
