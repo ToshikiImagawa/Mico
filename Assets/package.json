@@ -1,0 +1,32 @@
+{
+    "name": "com.comcreate-info.mico",
+    "displayName": "Mico",
+    "version": "0.0.1",
+    "unity": "2018.1",
+    "description": "This is Mico Package.",
+    "keywords": ["Script", "Test"],
+    "category": "Controllers",
+    "dependencies": { },
+    "files": [
+        "package.json",
+        "package.json.meta",
+        "LICENSE",
+        "LICENSE.meta",
+        "Mico/Context",
+        "Mico/Context.meta",
+        "Mico/Scripts"
+        "Mico/Scripts.meta"
+    ],
+    "author": {
+        "name": "ToshikiImagawa",
+        "url": "https://github.com/ToshikiImagawa/Mico"
+    },
+    "license": {
+        "type": "MIT",
+        "url": "https://github.com/ToshikiImagawa/Mico/blob/master/LICENSE"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ToshikiImagawa/Mico"
+    }
+}
