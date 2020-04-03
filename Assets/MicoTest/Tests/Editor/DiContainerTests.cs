@@ -385,7 +385,7 @@ namespace MicoTest
         public void test_RegisterしたインスタンスがInjectで注入されること()
         {
             // setup
-            _container.RegisterNew<IMockId, Mock>();
+            _container.RegisterNew(new[] {typeof(IMockId), typeof(IMockName)}, typeof(Mock));
             var injectMock = new InjectMock();
             // exercise
             _container.Compile();
@@ -461,9 +461,27 @@ namespace MicoTest
             Assert.AreEqual(initializedId, 30);
         }
 
+        [Test]
+        public void test_RegisterされたオブジェクトがInject後にIInitializable_Initializedが呼ばれること()
+        {
+            // setup
+            _container.RegisterNew(new[] {typeof(IMockId), typeof(IMockName)}, typeof(Mock), 30).WithId("inner");
+            _container.RegisterNew(new[] {typeof(IMockId), typeof(IMockName)}, typeof(InitializableMock));
+            var injectMock = new InjectMock();
+            // exercise
+            _container.Compile();
+            _container.Inject(injectMock);
+            // verify
+            var id = injectMock.Id;
+            var name = injectMock.Name;
+            Assert.AreEqual(id, 30);
+            Assert.AreEqual(name, "Tom");
+        }
+
         public class InjectMock
         {
             [InjectField] private IMockId _mockId;
+            [InjectField] private IMockName _mockName;
 
             public InjectMock() : this(null)
             {
@@ -475,6 +493,7 @@ namespace MicoTest
             }
 
             public int Id => _mockId?.Id ?? -1;
+            public string Name => _mockName?.Name ?? string.Empty;
         }
 
         public class InjectIdMock
@@ -534,6 +553,25 @@ namespace MicoTest
             {
                 Initialized = true;
                 InitializedId = Id;
+            }
+        }
+
+        public class InitializableMock : IMockId, IMockName, IInitializable
+        {
+            [InjectField(Id = "inner")] private IMockId _mockId;
+            public int Id { get; private set; }
+
+            public string Name { get; private set; }
+
+            public InitializableMock()
+            {
+                Name = "Taro";
+            }
+
+            public void Initialize()
+            {
+                Name = "Tom";
+                Id = _mockId?.Id ?? -1;
             }
         }
     }
