@@ -46,6 +46,7 @@
               <e p="DiContainer.cs" t="Include" />
               <e p="DiContainer_Register.cs" t="Include" />
               <e p="IgnoreInjectionAttribute.cs" t="Include" />
+              <e p="IInitializable.cs" t="Include" />
               <e p="InjectFieldAttribute.cs" t="Include" />
               <e p="Internal" t="Include">
                 <e p="FactoryTable.cs" t="Include" />

@@ -427,8 +427,10 @@ namespace MicoTest
             _container.Compile();
             _container.Inject(injectIdMock);
             // verify
-            Assert.AreEqual(injectIdMock.Id1, 100);
-            Assert.AreEqual(injectIdMock.Id2, 30);
+            var id1 = injectIdMock.Id1;
+            var id2 = injectIdMock.Id2;
+            Assert.AreEqual(id1, 100);
+            Assert.AreEqual(id2, 30);
         }
 
         [Test]
@@ -442,6 +444,21 @@ namespace MicoTest
             _container.Dispose();
             // verify
             Assert.IsFalse(_container.IsCompiled);
+        }
+
+        [Test]
+        public void test_Inject後にIInitializable_Initializedが呼ばれること()
+        {
+            // setup
+            _container.RegisterNew<IMockId, Mock>(30);
+            var injectMock = new InitializableInjectMock();
+            // exercise
+            _container.Compile();
+            _container.Inject(injectMock);
+            // verify
+            Assert.IsTrue(injectMock.Initialized);
+            var initializedId = injectMock.InitializedId;
+            Assert.AreEqual(initializedId, 30);
         }
 
         public class InjectMock
@@ -480,8 +497,44 @@ namespace MicoTest
         }
 
         [IgnoreInjection]
-        public class IgnoreInjectionMock : InjectMock
+        public class IgnoreInjectionMock
         {
+            [InjectField] private IMockId _mockId;
+
+            public IgnoreInjectionMock() : this(null)
+            {
+            }
+
+            public IgnoreInjectionMock(IMockId mockId)
+            {
+                _mockId = mockId;
+            }
+
+            public int Id => _mockId?.Id ?? -1;
+        }
+
+        public class InitializableInjectMock : IInitializable
+        {
+            [InjectField] private IMockId _mockId;
+            public bool Initialized { get; private set; }
+            public int InitializedId { get; private set; }
+
+            public int Id => _mockId?.Id ?? -1;
+
+            public InitializableInjectMock() : this(null)
+            {
+            }
+
+            public InitializableInjectMock(IMockId mockId)
+            {
+                _mockId = mockId;
+            }
+
+            public void Initialize()
+            {
+                Initialized = true;
+                InitializedId = Id;
+            }
         }
     }
 }

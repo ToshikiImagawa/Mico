@@ -58,6 +58,11 @@ namespace Mico
             {
                 setter?.Invoke();
             }
+
+            if (obj is IInitializable initializable)
+            {
+                initializable.Initialize();
+            }
         }
 
         private Func<object> GetFactory(Type fieldType, object id)
