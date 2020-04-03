@@ -7,16 +7,6 @@
     "keywords": ["Script", "Test"],
     "category": "Controllers",
     "dependencies": { },
-    "files": [
-        "package.json",
-        "package.json.meta",
-        "LICENSE",
-        "LICENSE.meta",
-        "Mico/Context",
-        "Mico/Context.meta",
-        "Mico/Scripts"
-        "Mico/Scripts.meta"
-    ],
     "author": {
         "name": "ToshikiImagawa",
         "url": "https://github.com/ToshikiImagawa/Mico"
