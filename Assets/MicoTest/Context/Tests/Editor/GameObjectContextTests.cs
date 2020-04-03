@@ -4,7 +4,9 @@
 using Mico;
 using Mico.Context;
 using Mico.Context.Internal;
+#if MICO_TEST_ADD_NSUBSTITUTE
 using NSubstitute;
+#endif
 using NUnit.Framework;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
@@ -27,6 +29,7 @@ namespace MicoContextTest
             ContextContainer.Swap(container);
         }
 
+#if MICO_TEST_ADD_NSUBSTITUTE
         [Test]
         public void test_ParentContextでGameObjectContextServiceのGetGameObjectContextOrDefaultがかえること()
         {
@@ -41,5 +44,6 @@ namespace MicoContextTest
             // verify
             Assert.AreEqual(actual, contextMock);
         }
+#endif
     }
 }

@@ -504,6 +504,7 @@ PlayerSettings:
   scriptingDefineSymbols:
     1: MICO_TEST_ADD_NSUBSTITUTE
     4: MICO_TEST_ADD_NSUBSTITUTE
+    7: MICO_TEST_ADD_NSUBSTITUTE
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration: {}

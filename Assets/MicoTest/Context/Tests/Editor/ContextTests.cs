@@ -4,7 +4,9 @@
 using Mico;
 using Mico.Context;
 using Mico.Context.Internal;
+#if MICO_TEST_ADD_NSUBSTITUTE
 using NSubstitute;
+#endif
 using NUnit.Framework;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
@@ -18,13 +20,17 @@ namespace MicoContextTest
         {
             // setup
             IContext context = new GameObject().AddComponent<GameObjectContext>();
+#if MICO_TEST_ADD_NSUBSTITUTE
             var container = Substitute.For<DiContainer>();
             // exercise
             context.SetContainer(container);
             var actual = context.Container;
             // verify
             Assert.AreEqual(actual, container);
+#endif
         }
+
+#if MICO_TEST_ADD_NSUBSTITUTE
         [Test]
         public void test_DestroyでセットしたDiContainerが削除されること()
         {
@@ -39,5 +45,6 @@ namespace MicoContextTest
             // verify
             Assert.AreEqual(actual, container);
         }
+#endif
     }
 }

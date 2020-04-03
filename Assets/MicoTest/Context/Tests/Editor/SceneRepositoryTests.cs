@@ -4,7 +4,9 @@
 using System;
 using Mico;
 using Mico.Context.Internal;
+#if MICO_TEST_ADD_NSUBSTITUTE
 using NSubstitute;
+#endif
 using NUnit.Framework;
 using Assert = UnityEngine.Assertions.Assert;
 
@@ -27,6 +29,7 @@ namespace MicoContextTest
             ContextContainer.Swap(container);
         }
 
+#if MICO_TEST_ADD_NSUBSTITUTE
         [Test]
         public void test_GetCacheScene実行時にGetSceneByPathがtrueの時をSceneが取得できること()
         {
@@ -107,5 +110,6 @@ namespace MicoContextTest
             // verify
             Assert.IsNotNull(exception);
         }
+#endif
     }
 }
