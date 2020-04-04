@@ -78,6 +78,7 @@ namespace Mico.Context.Internal
 
         public IContext GetSceneContextOrDefault(string scenePath)
         {
+            if (string.IsNullOrEmpty(scenePath)) return null;
             var parentScene = _sceneRepository.GetCacheScene(scenePath);
             if (!parentScene.HasValue) return null;
             var handle = parentScene.Value.handle;
