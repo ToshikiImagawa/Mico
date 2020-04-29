@@ -53,11 +53,14 @@ namespace Mico.Internal
             if (_factoryTable.Length > index)
             {
                 var array = _factoryTable[index];
-                foreach (var factoryTuple in array)
+                if (array != null)
                 {
-                    if (factoryTuple.Type != type || !factoryTuple.Id.Equals(id)) continue;
-                    factory = factoryTuple.Factory;
-                    return true;
+                    foreach (var factoryTuple in array)
+                    {
+                        if (factoryTuple.Type != type || !factoryTuple.Id.Equals(id)) continue;
+                        factory = factoryTuple.Factory;
+                        return true;
+                    }
                 }
             }
 
